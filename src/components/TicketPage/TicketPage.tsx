@@ -1,6 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../TicketPage/TicketPage.scss';
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  PayPalButtonsComponentProps,
+  ReactPayPalScriptOptions,
+} from '@paypal/react-paypal-js';
 
 enum Price {
   standart = 649,
@@ -14,6 +19,10 @@ export const TicketPage: React.FC = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
+
+  useEffect(() => {
+    console.log("PayPal SDK loaded:", window.paypal);
+  }, []);
 
   const handleBuyTicket = (type: 'Standart' | 'VIP') => {
     setTicketType(type);
@@ -65,15 +74,21 @@ export const TicketPage: React.FC = () => {
   //   }
   // };
 
+  const initialOptions: ReactPayPalScriptOptions = {
+    clientId:
+      // 'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
+      'test',
+    components: 'buttons',
+    currency: 'PLN',
+  };
+
+  const styles: PayPalButtonsComponentProps['style'] = {
+    shape: 'rect',
+    layout: 'vertical',
+  };
+
   return (
-    <PayPalScriptProvider
-      options={{
-        clientId:
-          'AWuKGlMuh_TyVaCiohRcPFeOLkjYHK1TROpjbbdsi323N3YfaCRCFrUsjz4VjfViJuVubQXiMszDsZwL',
-        currency: 'PLN',
-        enableFunding: 'paylater,card',
-      }}
-    >
+    <PayPalScriptProvider options={initialOptions}>
       <div className="ticket" id="ticket">
         <div className="ticket__wrapper">
           <div className="ticket__main">
@@ -128,7 +143,7 @@ export const TicketPage: React.FC = () => {
                   Купити квиток
                 </a>
                 <p className="ticket__standart--price">
-                  Ціна:{' '}
+                  Ціна:
                   <span className="ticket__standart--price--cost">
                     {Price.standart} PLN
                   </span>
@@ -171,7 +186,7 @@ export const TicketPage: React.FC = () => {
                   Купити квиток
                 </a>
                 <p className="ticket__vip--price">
-                  Ціна:{' '}
+                  Ціна:
                   <span className="ticket__vip--price--cost">
                     {Price.vip} PLN
                   </span>
@@ -180,83 +195,6 @@ export const TicketPage: React.FC = () => {
             </div>
 
             {showForm && (
-              // <form
-              //   action="#"
-              //   id="tiketForm"
-              //   className="ticket__form form"
-              //   onSubmit={e => e.preventDefault()}
-              // >
-              //   <label htmlFor="email" className="form__label">
-              //     E-mail:{' '}
-              //   </label>
-              //   <input
-              //     type="email"
-              //     name="email"
-              //     id="email"
-              //     className="form__input"
-              //     value={formData.email}
-              //     onChange={handleChange}
-              //     required
-              //   />
-
-              //   <label htmlFor="name" className="form__label">
-              //     Ім'я:
-              //   </label>
-              //   <input
-              //     type="text"
-              //     name="name"
-              //     id="name"
-              //     className="form__input"
-              //     value={formData.name}
-              //     onChange={handleChange}
-              //     required
-              //   />
-
-              //   <label htmlFor="surname" className="form__label">
-              //     Прізвище:{' '}
-              //   </label>
-              //   <input
-              //     type="text"
-              //     name="surname"
-              //     id="surname"
-              //     className="form__input"
-              //     value={formData.surname}
-              //     onChange={handleChange}
-              //     required
-              //   />
-
-              //   <label htmlFor="tel" className="form__label">
-              //     Телефон:{' '}
-              //   </label>
-              //   <input
-              //     type="tel"
-              //     name="tel"
-              //     id="tel"
-              //     className="form__input"
-              //     value={formData.tel}
-              //     required
-              //   />
-
-              //   <select
-              //     name="typeTicket"
-              //     id="typeTicket"
-              //     className="form__input option"
-              //     value={formData.typeTicket}
-              //     onChange={handleChange}
-              //     required
-              //   >
-              //     <option value="tandart">Standart {Price.standart}</option>
-              //     <option value="tandart">VIP {Price.vip}</option>
-              //   </select>
-
-              //   <button
-              //     type="submit"
-              //     className="form__button"
-              //     onClick={handleSubmit}
-              //   >
-              //     Оплатити
-              //   </button>
-              // </form>
               <div className="ticket__form">
                 <form id="tiketForm" className="ticket__form form">
                   <h2>Оплата квитка {ticketType}</h2>
@@ -297,41 +235,7 @@ export const TicketPage: React.FC = () => {
                     До сплати: <strong>{ticketPrice} PLN</strong>
                   </p>
 
-                  <PayPalButtons
-                    createOrder={(data, actions) => {
-                      return actions.order.create({
-                        intent: 'CAPTURE',
-                        purchase_units: [
-                          {
-                            amount: {
-                              value: ticketPrice.toString(),
-                              currency_code: 'PLN',
-                            },
-                          },
-                        ],
-                      });
-                    }}
-                    onApprove={(data, actions) => {
-                      // if (!actions.order) {
-                      //   return Promise.reject(
-                      //     new Error('Order acton not available'),
-                      //   );
-                      // }
-                      if (!actions.order) return;
-                      return actions.order?.capture().then(details => {
-                        const payerName =
-                          details.payer?.name?.given_name || 'Користувач';
-                        alert(`Оплата успішна! Дякуємо, ${payerName}`);
-                        setShowForm(false);
-                      });
-                    }}
-                    onError={err => {
-                      console.error('Помилка оплати:', err);
-                      alert(
-                        'Сталася помилка під час оплати. Спробуйте ще раз.',
-                      );
-                    }}
-                  />
+                  <PayPalButtons style={styles} />
                 </form>
               </div>
             )}
