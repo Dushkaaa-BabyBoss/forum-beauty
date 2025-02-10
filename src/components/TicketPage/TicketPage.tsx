@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import '../TicketPage/TicketPage.scss';
 import {
   PayPalScriptProvider,
@@ -20,64 +20,16 @@ export const TicketPage: React.FC = () => {
   const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
 
-  useEffect(() => {
-    console.log("PayPal SDK loaded:", window.paypal);
-  }, []);
-
   const handleBuyTicket = (type: 'Standart' | 'VIP') => {
     setTicketType(type);
     setShowForm(true);
   };
 
   const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
-  // const [formData, setFormData] = useState({
-  //   email: '',
-  //   name: '',
-  //   surname: '',
-  //   tel: '',
-  //   typeTicket: 'standart',
-  // });
-
-  // const handleChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  // ) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
-  // const handleSubmit = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:5000/api/payment', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         email: formData.email,
-  //         name: formData.name,
-  //         surname: formData.surname,
-  //         tel: formData.tel,
-  //         typeTicket: formData.typeTicket,
-  //         amount:
-  //           formData.typeTicket === 'standart' ? Price.standart : Price.vip,
-  //       }),
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (data.redirectUrl) {
-  //       window.location.href = data.redirectUrl; // Переадресація на сторінку Przelewy24
-  //     } else {
-  //       alert('Помилка при ініціалізації платежу.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Помилка:', error);
-  //   }
-  // };
-
+  /* eslint-disable max-len */
   const initialOptions: ReactPayPalScriptOptions = {
     clientId:
-      // 'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
-      'test',
+      'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
     components: 'buttons',
     currency: 'PLN',
   };
@@ -93,7 +45,7 @@ export const TicketPage: React.FC = () => {
         <div className="ticket__wrapper">
           <div className="ticket__main">
             <div className="ticket__top">
-              <h1 className="ticket__title">Квиткі</h1>
+              <h1 className="ticket__title">Квитки</h1>
             </div>
             <div className="ticket__content">
               <div className="ticket__standart">
@@ -199,32 +151,44 @@ export const TicketPage: React.FC = () => {
                 <form id="tiketForm" className="ticket__form form">
                   <h2>Оплата квитка {ticketType}</h2>
 
-                  <label className="form__label">E-mail:</label>
+                  <label className="form__label" htmlFor="email">
+                    E-mail:
+                  </label>
                   <input
+                    id="email"
                     type="email"
                     className="form__input"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                   />
 
-                  <label className="form__label">Ім'я:</label>
+                  <label className="form__label" htmlFor="name">
+                    {`Ім'я:`}
+                  </label>
                   <input
+                    id="name"
                     type="text"
                     className="form__input"
                     value={name}
                     onChange={e => setName(e.target.value)}
                   />
 
-                  <label className="form__label">Прізвище:</label>
+                  <label className="form__label" htmlFor="surname">
+                    Прізвище:
+                  </label>
                   <input
+                    id="surname"
                     type="text"
                     className="form__input"
                     value={surname}
                     onChange={e => setSurname(e.target.value)}
                   />
 
-                  <label className="form__label">Телефон:</label>
+                  <label className="form__label" htmlFor="tel">
+                    Телефон:
+                  </label>
                   <input
+                    id="tel"
                     type="tel"
                     className="form__input"
                     value={phone}
