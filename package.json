@@ -3,6 +3,7 @@
   "name": "react-typescript-starter-pack",
   "version": "0.1.0",
   "dependencies": {
+    "emailService": "./api/emailService",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@paypal/react-paypal-js": "^8.8.2",
     "axios": "^1.7.9",
