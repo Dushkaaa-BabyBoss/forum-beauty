@@ -204,7 +204,7 @@ export const TicketPage: React.FC = () => {
 
                   <PayPalButtons
                     style={styles}
-                    createOrder={(data, actions) => {
+                    createOrder={(_, actions) => {
                       return actions.order.create({
                         purchase_units: [
                           {
@@ -216,7 +216,7 @@ export const TicketPage: React.FC = () => {
                         ],
                       });
                     }}
-                    onApprove={(data, actions) => {
+                    onApprove={(_, actions) => {
                       return actions.order.capture().then(details => {
                         alert(
                           `Транзакція завершена, ${details.payer.name.given_name}!`,
