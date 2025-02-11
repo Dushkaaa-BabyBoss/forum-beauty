@@ -231,7 +231,7 @@ export const TicketPage: React.FC = () => {
                           );
 
                           const purchaseData = {
-                            email, // Email користувача
+                            email,
                             name,
                             surname,
                             ticketType,
@@ -239,7 +239,7 @@ export const TicketPage: React.FC = () => {
                             amount: ticketPrice,
                           };
 
-                          await fetch('https://www.beauty-revolution.pl/send-email', {
+                          await fetch('/api/send-email', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(purchaseData),
