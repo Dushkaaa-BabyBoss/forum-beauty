@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useState } from 'react';
 import '../TicketPage/TicketPage.scss';
 import {
@@ -30,6 +32,7 @@ export const TicketPage: React.FC = () => {
   const initialOptions: ReactPayPalScriptOptions = {
     clientId:
       'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
+      // 'test',
     components: 'buttons',
     currency: 'PLN',
   };
@@ -199,7 +202,28 @@ export const TicketPage: React.FC = () => {
                     До сплати: <strong>{ticketPrice} PLN</strong>
                   </p>
 
-                  <PayPalButtons style={styles} />
+                  <PayPalButtons
+                    style={styles}
+                    createOrder={(data, actions) => {
+                      return actions.order.create({
+                        purchase_units: [
+                          {
+                            amount: {
+                              currency_code: 'PLN',
+                              value: ticketPrice.toString(),
+                            },
+                          },
+                        ],
+                      });
+                    }}
+                    onApprove={(data, actions) => {
+                      return actions.order.capture().then(details => {
+                        alert(
+                          `Транзакція завершена, ${details.payer.name.given_name}!`,
+                        );
+                      });
+                    }}
+                  />
                 </form>
               </div>
             )}
