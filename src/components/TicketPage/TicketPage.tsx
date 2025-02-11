@@ -32,7 +32,7 @@ export const TicketPage: React.FC = () => {
   const initialOptions: ReactPayPalScriptOptions = {
     clientId:
       'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
-      // 'test',
+    // 'test',
     components: 'buttons',
     currency: 'PLN',
   };
@@ -206,6 +206,7 @@ export const TicketPage: React.FC = () => {
                     style={styles}
                     createOrder={(_, actions) => {
                       return actions.order.create({
+                        intent: 'CAPTURE',
                         purchase_units: [
                           {
                             amount: {
@@ -216,12 +217,21 @@ export const TicketPage: React.FC = () => {
                         ],
                       });
                     }}
-                    onApprove={(_, actions) => {
-                      return actions.order.capture().then(details => {
+                    onApprove={async (_, actions) => {
+                      if (!actions || !actions.order) {
+                        console.error('PayPal actions are undefined');
+                        return;
+                      }
+
+                      try {
+                        const details = await actions.order.capture();
                         alert(
-                          `Транзакція завершена, ${details.payer.name.given_name}!`,
+                          `Транзакція завершена, ${details?.payer?.name?.given_name || 'користувач'}!`,
                         );
-                      });
+                        console.log('Transaction details:', details);
+                      } catch (error) {
+                        console.error('Capture failed:', error);
+                      }
                     }}
                   />
                 </form>
