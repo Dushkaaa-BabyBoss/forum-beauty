@@ -152,7 +152,7 @@ export const TicketPage: React.FC = () => {
             {showForm && (
               <div className="ticket__form">
                 <form id="tiketForm" className="ticket__form form">
-                  <h2>Оплата квитка {ticketType}</h2>
+                  <h2 className="option">Оплата квитка {ticketType}</h2>
 
                   <label className="form__label" htmlFor="email">
                     E-mail:
@@ -198,42 +198,61 @@ export const TicketPage: React.FC = () => {
                     onChange={e => setPhone(e.target.value)}
                   />
 
-                  <p>
-                    До сплати: <strong>{ticketPrice} PLN</strong>
+                  <p className="option">
+                    До сплати: <strong className="option">{ticketPrice} PLN</strong>
                   </p>
 
-                  <PayPalButtons
-                    style={styles}
-                    createOrder={(_, actions) => {
-                      return actions.order.create({
-                        intent: 'CAPTURE',
-                        purchase_units: [
-                          {
-                            amount: {
-                              currency_code: 'PLN',
-                              value: ticketPrice.toString(),
+                  {name && surname && email && phone && (
+                    <PayPalButtons
+                      style={styles}
+                      createOrder={(_, actions) => {
+                        return actions.order.create({
+                          intent: 'CAPTURE',
+                          purchase_units: [
+                            {
+                              amount: {
+                                currency_code: 'PLN',
+                                value: ticketPrice.toString(),
+                              },
                             },
-                          },
-                        ],
-                      });
-                    }}
-                    onApprove={async (_, actions) => {
-                      if (!actions || !actions.order) {
-                        console.error('PayPal actions are undefined');
-                        return;
-                      }
+                          ],
+                        });
+                      }}
+                      onApprove={async (_, actions) => {
+                        if (!actions || !actions.order) {
+                          console.error('PayPal actions are undefined');
+                          return;
+                        }
 
-                      try {
-                        const details = await actions.order.capture();
-                        alert(
-                          `Транзакція завершена, ${details?.payer?.name?.given_name || 'користувач'}!`,
-                        );
-                        console.log('Transaction details:', details);
-                      } catch (error) {
-                        console.error('Capture failed:', error);
-                      }
-                    }}
-                  />
+                        try {
+                          const details = await actions.order.capture();
+                          alert(
+                            `Транзакція завершена, ${details?.payer?.name?.given_name || 'користувач'}!`,
+                          );
+
+                          const purchaseData = {
+                            email, // Email користувача
+                            name,
+                            surname,
+                            ticketType,
+                            phone,
+                            amount: ticketPrice,
+                          };
+
+                          await fetch('http://localhost:5000/send-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(purchaseData),
+                          });
+
+                          console.log('Email confirmation sent');
+                          console.log('Transaction details:', details);
+                        } catch (error) {
+                          console.error('Capture failed:', error);
+                        }
+                      }}
+                    />
+                  )}
                 </form>
               </div>
             )}

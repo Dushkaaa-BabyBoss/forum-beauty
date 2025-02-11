@@ -192,7 +192,8 @@
         border-radius: 30px;
         padding: 0 20px;
         font-weight: 700;
-        font-size: 24px;
+        width: 120px;
+        // font-size: 18px;
 
         @include onTablet {
           font-size: 20px;
@@ -203,6 +204,7 @@
         }
 
         @include onLargeDesctop {
+          width: 140px;
           font-size: 24px;
         }
       }
