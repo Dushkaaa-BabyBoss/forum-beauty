@@ -20,7 +20,7 @@ const sendEmail = (
   const mailOptions = {
     from: process.env.EMAIL_USER, // Ваш email
     to: recipientEmail, // Email покупця
-    subject: 'Підтвердження покупки квитка',
+    subject: 'Підтвердження купівлі квитка',
     html: `
       <h1>Привіт, ${name} ${surname}!</h1>
       <p>Ваш телефон: ${phone}</p>
