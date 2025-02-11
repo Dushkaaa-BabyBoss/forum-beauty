@@ -4,7 +4,12 @@ const { sendEmail } = require('./emailService');
 
 const app = express();
 app.use(express.json());
-app.use(cors()); // Дозволяє клієнту надсилати запити на сервер
+// app.use(cors()); // Дозволяє клієнту надсилати запити на сервер
+
+app.use(cors({
+  origin: 'https://forum-beauty.vercel.app',
+  methods: 'GET, POST',
+}));
 
 app.post('/send-email', async (req, res) => {
   const { email, name, surname, ticketType, amount } = req.body;
