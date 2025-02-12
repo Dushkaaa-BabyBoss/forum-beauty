@@ -330,7 +330,16 @@
   }
 }
 
+input:-internal-atofill-selected {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #9c626d !important;
+  color: #fefefe !important;
+}
 input:-webkit-autofill {
+  -webkit-text-fill-color: #fefefe !important;
+  background-color: #9c626d !important;
   box-shadow: 0 0 0px 1000px #9c626d inset !important;
 }
 
