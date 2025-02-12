@@ -3,6 +3,7 @@ import './App.scss';
 import { Header } from './components/HeaderPage/Header';
 import { TicketPage } from './components/TicketPage/TicketPage';
 import { Footer } from './components/Footer/Footer';
+import { Analytics } from '@vercel/analytics/react';
 
 export const App: React.FC = () => {
   return (
@@ -10,6 +11,7 @@ export const App: React.FC = () => {
       <Header />
       <TicketPage />
       <Footer />
+      <Analytics />
     </div>
   );
 };
