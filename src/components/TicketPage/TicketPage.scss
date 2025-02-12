@@ -330,9 +330,23 @@
   }
 }
 
+input:-internal-atofill-selected {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #9c626d !important;
+  color: #fefefe !important;
+}
+input:-webkit-autofill {
+  -webkit-text-fill-color: #fefefe !important;
+  background-color: #9c626d !important;
+  box-shadow: 0 0 0px 1000px #9c626d inset !important;
+}
+
 .form {
   &__input {
-    color: #7c2f3f;
+    -webkit-text-fill-color: #fefefe !important;
+    color: #fefefe;
     font-weight: 600;
     width: 300px;
     padding: 10px 10px;
@@ -340,6 +354,8 @@
     border: none;
     border-bottom: 2px solid #7c2f3f;
     min-height: 50px;
+    letter-spacing: 2px;
+    font-family: Roboto, sans-serif;
 
     outline: none;
   }
@@ -391,4 +407,18 @@
 
 .option {
   color: #c6c8ce;
+}
+
+.warning__title {
+  color: #c6c8ce;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 12px;
+}
+
+.warning__description {
+  text-align: center;
+  color: #c6c8ce;
+  font-weight: 600;
 }
