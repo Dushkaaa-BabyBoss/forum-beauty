@@ -1,0 +1,14 @@
+.footer {
+  background-color: #a03c50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fefefe;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}

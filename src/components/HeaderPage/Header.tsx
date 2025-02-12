@@ -14,7 +14,13 @@ export const Header: React.FC = () => {
           <div className="header__right-side">
             <img src="./logo-line.png" alt="logo" className="header__logo" />
             <div className="header__links">
-              <a href="#" className="header__links--about">
+              {/* eslint-disable max-len */}
+              <a
+                href="https://www.instagram.com/the.beauty_revolution?igsh=ZHdvaHNrYnB4bGlt"
+                className="header__links--about"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Дізнатися більше
               </a>
               <a href="#ticket" className="header__links--buy-ticket">

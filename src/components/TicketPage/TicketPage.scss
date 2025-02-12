@@ -71,6 +71,7 @@
       color: #7c2f3f;
       font-family: Roboto, sans-serif;
       text-transform: uppercase;
+      font-size: 20px;
 
       display: flex;
       align-items: center;
@@ -86,12 +87,13 @@
       }
 
       &--cost {
+        text-align: center;
         color: #fefefe;
         background-color: #7c2f3f;
         border-radius: 30px;
         padding: 0 20px;
         font-weight: 700;
-        // font-size: 24px;
+        width: 120px;
 
         @include onTablet {
           font-size: 20px;
@@ -102,6 +104,7 @@
         }
 
         @include onLargeDesctop {
+          width: 140px;
           font-size: 24px;
         }
       }
@@ -169,7 +172,6 @@
     border: 6px solid #7c2f3f;
     border-radius: 20px;
     padding-bottom: 50px;
-    position: relative;
 
     &--price {
       color: #c6c8ce;
@@ -187,13 +189,13 @@
       left: 50%;
 
       &--cost {
+        text-align: center;
         color: #7c2f3f;
         background-color: #fefefe;
         border-radius: 30px;
         padding: 0 20px;
         font-weight: 700;
         width: 120px;
-        // font-size: 18px;
 
         @include onTablet {
           font-size: 20px;
