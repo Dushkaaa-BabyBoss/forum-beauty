@@ -34,7 +34,7 @@ export const TicketPage: React.FC = () => {
   const initialOptions: ReactPayPalScriptOptions = {
     clientId:
       // 'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
-    'AcDg9Updj6ox7ScbndAOAr0RF3FF3dkJBNjN5T9FJfuO4XhBXkC9N0QyvjWUG3AO7fx6y6AAmC1LseQQ',
+      'AcDg9Updj6ox7ScbndAOAr0RF3FF3dkJBNjN5T9FJfuO4XhBXkC9N0QyvjWUG3AO7fx6y6AAmC1LseQQ',
     components: 'buttons',
     currency: 'PLN',
   };
@@ -155,6 +155,12 @@ export const TicketPage: React.FC = () => {
               <div className="ticket__form">
                 <form id="tiketForm" className="ticket__form form">
                   <h2 className="option">Оплата квитка {ticketType}</h2>
+                  {email && (
+                    <>
+                      <h3 className="warning__title">УВАГА!! Заповни вірно e-mail</h3>
+                      <p className="warning__description">На твою почту прийде підтвердження твого квитка</p>
+                    </>
+                  )}
 
                   <label className="form__label" htmlFor="email">
                     E-mail:
@@ -201,7 +207,8 @@ export const TicketPage: React.FC = () => {
                   />
 
                   <p className="option">
-                    До сплати: <strong className="option">{ticketPrice} PLN</strong>
+                    До сплати:{' '}
+                    <strong className="option">{ticketPrice} PLN</strong>
                   </p>
 
                   {name && surname && email && phone && (
