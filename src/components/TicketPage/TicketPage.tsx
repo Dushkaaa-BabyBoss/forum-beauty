@@ -31,8 +31,8 @@ export const TicketPage: React.FC = () => {
   /* eslint-disable max-len */
   const initialOptions: ReactPayPalScriptOptions = {
     clientId:
-      'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
-    // 'test',
+      // 'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
+    'AcDg9Updj6ox7ScbndAOAr0RF3FF3dkJBNjN5T9FJfuO4XhBXkC9N0QyvjWUG3AO7fx6y6AAmC1LseQQ',
     components: 'buttons',
     currency: 'PLN',
   };
