@@ -10,8 +10,10 @@ import {
 } from '@paypal/react-paypal-js';
 
 enum Price {
-  standart = 649,
-  vip = 949,
+  standart = 5,
+  vip = 5,
+  // standart = 649,
+  // vip = 949,
 }
 
 export const TicketPage: React.FC = () => {
