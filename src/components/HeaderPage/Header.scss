@@ -17,6 +17,21 @@
     background-color: #fefefe;
     // box-shadow: -1px 7px 24px -11px rgba(66, 68, 90, 1);
     box-shadow: -1px 7px 57px -11px rgba(66, 68, 90, 1);
+    position: relative;
+  }
+
+  &__lang {
+    position: absolute;
+    right: 0;
+    top: -40px;
+
+    display: flex;
+    gap: 30px;
+    margin-right: 20px;
+
+    @include onDesctop {
+      top: 0;
+    }
   }
 
   &__title {
@@ -134,5 +149,16 @@
     @include onDesctop {
       gap: 50px;
     }
+  }
+}
+
+.lang {
+  &__link {
+    background-color: #a03c50;
+    color: #fefefe;
+    display: block;
+    padding: 10px;
+    width: 50px;
+    text-align: center;
   }
 }
