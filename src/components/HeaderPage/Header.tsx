@@ -1,11 +1,39 @@
 import '../HeaderPage/Header.scss';
 
-export const Header: React.FC = () => {
+type PropsHeader = {
+  setLangPl: (bool: boolean) => void;
+  setLangUa: (bool: boolean) => void;
+  langUa: boolean;
+  langPl: boolean;
+};
+
+export const Header: React.FC<PropsHeader> = ({
+  setLangPl,
+  setLangUa,
+  // langUa,
+  langPl,
+}) => {
   return (
     <header className="header">
       <div className="header__wrapper">
         <div className="header__top">
           <h1 className="header__title">Beauty Revolution Conference</h1>
+          <div className="header__lang lang">
+            <a
+              href="#"
+              className="lang__link"
+              onClick={() => (setLangPl(true), setLangUa(false))}
+            >
+              PL
+            </a>
+            <a
+              href="#"
+              className="lang__link"
+              onClick={() => (setLangUa(true), setLangPl(false))}
+            >
+              UA
+            </a>
+          </div>
         </div>
         <div className="header__center">
           <div className="header__left-side">
@@ -21,10 +49,12 @@ export const Header: React.FC = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                Дізнатися більше
+                {/* Дізнатися більше */}
+                {langPl ? <>Dowiedz się więcej</> : <>Дізнатися більше</>}
               </a>
               <a href="#ticket" className="header__links--buy-ticket">
-                Купити квиток
+                {/* Купити квиток */}
+                {langPl ? <>Kup bilet</> : <>Купити квиток</>}
               </a>
             </div>
           </div>
