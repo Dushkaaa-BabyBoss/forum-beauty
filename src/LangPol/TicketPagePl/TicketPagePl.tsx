@@ -4,8 +4,8 @@ import { useState } from 'react';
 import '../../components/TicketPage/TicketPage.scss';
 import {
   PayPalScriptProvider,
-  PayPalButtons,
-  PayPalButtonsComponentProps,
+  // PayPalButtons,
+  // PayPalButtonsComponentProps,
   ReactPayPalScriptOptions,
 } from '@paypal/react-paypal-js';
 
@@ -39,10 +39,10 @@ export const TicketPagePl: React.FC = () => {
     currency: 'PLN',
   };
 
-  const styles: PayPalButtonsComponentProps['style'] = {
-    shape: 'rect',
-    layout: 'vertical',
-  };
+  // const styles: PayPalButtonsComponentProps['style'] = {
+  //   shape: 'rect',
+  //   layout: 'vertical',
+  // };
 
   return (
     <PayPalScriptProvider options={initialOptions}>
