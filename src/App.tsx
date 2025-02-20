@@ -8,6 +8,8 @@ import { Regulamin } from './components/Regulamin/Regulamin';
 import { Polityka } from './components/Polityka-prywatnosci/Polityka';
 import { TicketPagePl } from './LangPol/TicketPagePl/TicketPagePl';
 import { FooterPl } from './LangPol/FooterPl/FooterPl';
+import { Events } from './components/Events/Events';
+import { EventsPl } from './LangPol/EventsPl/EventsPl';
 
 export const App: React.FC = () => {
   const [isPolityk, setIsPolityk] = useState(false);
@@ -25,13 +27,13 @@ export const App: React.FC = () => {
       />
       {langUa && (
         <>
-          <TicketPage />{' '}
+          <TicketPage /> <Events />
           <Footer setIsRegul={setIsRegul} setIsPolityk={setIsPolityk} />
         </>
       )}
       {langPl && (
         <>
-          <TicketPagePl />{' '}
+          <TicketPagePl /> <EventsPl />
           <FooterPl setIsRegul={setIsRegul} setIsPolityk={setIsPolityk} />
         </>
       )}

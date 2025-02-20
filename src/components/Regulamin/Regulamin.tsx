@@ -23,9 +23,8 @@ export const Regulamin: React.FC<Props> = ({ setIsRegul }) => {
               521506727.
             </p>
             <p>
-              1.3. Każdy użytkownik zobowiązany jest do zapoznania się z
-              niniejszym regulaminem i akceptacji jego warunków przed
-              skorzystaniem z serwisu.
+              1.3. Korzystanie z serwisu oznacza akceptację niniejszego
+              regulaminu.
             </p>
           </div>
         </div>
@@ -38,8 +37,8 @@ export const Regulamin: React.FC<Props> = ({ setIsRegul }) => {
               treści, rejestracji na wydarzenia oraz dokonywania zakupów.
             </p>
             <p>
-              2.2. Wszelkie materiały zamieszczone w serwisie są chronione
-              prawem autorskim i nie mogą być kopiowane bez zgody właściciela.
+              2.2. Treści na stronie są objęte prawem autorskim i nie mogą być
+              kopiowane bez zgody właściciela.
             </p>
             <p>
               2.3. Użytkownik zobowiązuje się do korzystania z serwisu zgodnie z
@@ -73,45 +72,61 @@ export const Regulamin: React.FC<Props> = ({ setIsRegul }) => {
             <p>4.1. W serwisie można dokonywać zakupu biletów na wydarzenia.</p>
             <p>4.2. Płatności obsługiwane są przez zewnętrznych operatorów.</p>
             <p>
-              4.3. Bilety zakupione celowo przez użytkownika nie podlegają
-              zwrotowi ani zwrotowi środków, zgodnie z obowiązującymi zasadami.
+              4.3. Bilety zakupione przez użytkownika nie podlegają zwrotowi ani
+              zwrotowi środków, zgodnie z obowiązującymi zasadami.
             </p>
           </div>
         </div>
 
         <div>
-          <h2 className="regulamin__title">5. Reklamacje i zwroty</h2>
+          <h2 className="regulamin__title">
+            5. Dostawa i realizacja zamówienia
+          </h2>
           <div className="regulamin__description">
             <p>
-              5.1. Reklamacje można zgłaszać drogą mailową na adres
+              5.1. Bilety są dostarczane automatycznie na adres e-mail podany
+              podczas zakupu.
+            </p>
+            <p>
+              5.2. W przypadku problemów z dostawą biletu prosimy o kontakt pod
+              adresem beutyrevolution2025@gmail.com
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="regulamin__title">6. Reklamacje i zwroty</h2>
+          <div className="regulamin__description">
+            <p>
+              6.1. Reklamacje można zgłaszać drogą mailową na adres
               beutyrevolution2025@gmail.com.
             </p>
-            <p>5.2. Rozpatrzenie reklamacji następuje w terminie 14 dni.</p>
+            <p>6.2. Rozpatrzenie reklamacji następuje w terminie 14 dni.</p>
             <p>
-              5.3. Zakupione bilety nie podlegają zwrotowi ani wymianie na inne.
+              6.3. Zakupione bilety nie podlegają zwrotowi ani wymianie na inne.
             </p>
             <p>
-              5.4. Zwroty środków nie są możliwe, za wyjątkiem sytuacji, gdy
+              6.4. Zwroty środków nie są możliwe, za wyjątkiem sytuacji, gdy
               wydarzenie zostanie odwołane przez organizatora.
             </p>
           </div>
         </div>
 
         <div>
-          <h2 className="regulamin__title">6. Ochrona danych osobowych</h2>
+          <h2 className="regulamin__title">7. Ochrona danych osobowych</h2>
           <div className="regulamin__description">
             <p>
-              6.1. Szczegółowe zasady przetwarzania danych określa Polityka
+              7.1. Szczegółowe zasady przetwarzania danych określa Polityka
               Prywatności.
             </p>
           </div>
         </div>
 
         <div>
-          <h2 className="regulamin__title">7. Postanowienia końcowe</h2>
+          <h2 className="regulamin__title">8. Postanowienia końcowe</h2>
           <div className="regulamin__description">
             <p>
-              7.1. Właściciel serwisu może zmienić regulamin w dowolnym czasie.
+              8.1. Właściciel serwisu może zmienić regulamin w dowolnym czasie.
             </p>
           </div>
         </div>
