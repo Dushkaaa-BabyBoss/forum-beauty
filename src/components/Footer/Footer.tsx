@@ -15,7 +15,7 @@ export const Footer: React.FC<Props> = ({ setIsRegul, setIsPolityk }) => {
 
       <div className="footer__regulamin">
         <a href="#" className="footer__regul" onClick={() => setIsRegul(true)}>
-          Regulamin serwisu
+          Regulamin sklepu
         </a>
         <a
           href="#"

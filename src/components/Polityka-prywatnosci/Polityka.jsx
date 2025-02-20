@@ -11,7 +11,8 @@ export const Polityka = ({ setIsPolityk }) => {
           <div className="regulamin__description">
             <p>
               1.1. Administratorem danych osobowych jest Iryna Khomiak LASHES &
-              NAILS, z siedzibą w ul. Plonska 15, 03-683 Warszawa, e-mail:
+              NAILS, z siedzibą przy ul. Plonska 15, 03-683 Warszawa, NIP
+              9522144978, REGON 521506727, e-mail:
               beutyrevolution2025@gmail.com.
             </p>
           </div>
@@ -20,7 +21,10 @@ export const Polityka = ({ setIsPolityk }) => {
         <div>
           <h2 className="regulamin__title">2. Jakie dane zbieramy?</h2>
           <div className="regulamin__description">
-            <p>2.1. Dane osobowe: imię, nazwisko, adres e-mail, telefon.</p>
+            <p>
+              2.1. Zbieramy następujące dane osobowe: imię, nazwisko, adres
+              e-mail, numer telefonu.
+            </p>
             <p>
               2.2. Dane dotyczące płatności (przetwarzane przez zewnętrznych
               dostawców).
@@ -45,8 +49,9 @@ export const Polityka = ({ setIsPolityk }) => {
           <h2 className="regulamin__title">4. Udostępnianie danych</h2>
           <div className="regulamin__description">
             <p>
-              4.1. Dane mogą być przekazywane operatorom płatności, firmom
-              kurierskim oraz partnerom marketingowym.
+              4.1. Udostępniamy dane wyłącznie operatorom płatności, firmom
+              kurierskim i partnerom marketingowym. Nie sprzedajemy danych
+              osobowych.
             </p>
           </div>
         </div>
