@@ -30,7 +30,7 @@ export const TicketPage: React.FC = () => {
   // const apiKey = '7812c1120629c2a8d6f93fa1564e278d'; // Your API key
 
   const handlePayment = async () => {
-    const res = await fetch("https://www.beauty-revolution.pl/api/createP24Order", {
+    const res = await fetch("/api/createP24Order", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
