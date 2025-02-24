@@ -29,8 +29,29 @@ export const TicketPage: React.FC = () => {
   // const crcKey = 'f78903438443d488'; // Your CRC key
   // const apiKey = '7812c1120629c2a8d6f93fa1564e278d'; // Your API key
 
+  // const handlePayment = async () => {
+  //   const res = await fetch('/api/createP24Order', {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json", "Accept": "application/json" },
+  //     body: JSON.stringify({
+  //       email,
+  //       name,
+  //       surname,
+  //       phone,
+  //       amount: ticketPrice * 100,
+  //     }),
+  //   });
+
+  //   const data = await res.json();
+
+  //   if (data.redirectUrl) {
+  //     window.location.href = data.redirectUrl;
+  //   }
+  // }
+
+  
   const handlePayment = async () => {
-    const res = await fetch('/api/createP24Order', {
+    const res = await fetch("/api/payment", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
@@ -38,17 +59,18 @@ export const TicketPage: React.FC = () => {
         name,
         surname,
         phone,
-        amount: ticketPrice * 100,
+        amount: ticketPrice * 100, // Важливо! Przelewy24 приймає суми в ґроші (1 PLN = 100)
       }),
     });
-
+  
     const data = await res.json();
-
+  
     if (data.redirectUrl) {
-      window.location.href = data.redirectUrl;
+      window.location.href = data.redirectUrl; // Переходимо на сторінку оплати
+    } else {
+      alert("❌ Помилка при створенні платежу!");
     }
-  }  
-
+  };
   
   return (
     <div className="ticket" id="ticket">
