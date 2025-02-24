@@ -11,8 +11,8 @@ export default async function handler(req, res) {
   const crcKey = 'f78903438443d488';
 
   const orderData = {
-    merchantId: Number(merchantId),
-    posId: Number(merchantId),
+    merchantId: merchantId,
+    posId: merchantId,
     sessionId: crypto.randomUUID(),
     amount,
     currency: 'PLN',
