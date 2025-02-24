@@ -12,13 +12,14 @@ export default async function handler(req, res) {
 
   const orderData = {
     merchantId: merchantId,
-    posId: merchantId,
+    posId: 334750,
     sessionId: crypto.randomUUID(),
     amount,
     currency: 'PLN',
     description: `Оплата квитка ${name} ${surname}`,
     email: email,
     country: 'PL',
+    language: 'pl',
     urlReturn: 'https://www.beauty-revolution.pl/success',
     urlStatus: 'https://www.beauty-revolution.pl/api/p24Webhook',
     sign: '',
@@ -34,9 +35,7 @@ export default async function handler(req, res) {
   try {
     console.log(orderData);
 
-    //https://secure.przelewy24.pl/api/v1/transaction/register
-
-    const response = await fetch("https://secure.przelewy24.pl/trnRegister", {
+    const response = await fetch("https://secure.przelewy24.pl/api/v1/transaction/register", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer 7812c1120629c2a8d6f93fa1564e278d` },
       body: JSON.stringify(orderData),
