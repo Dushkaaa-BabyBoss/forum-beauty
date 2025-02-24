@@ -34,7 +34,9 @@ export default async function handler(req, res) {
   try {
     console.log(orderData);
 
-    const response = await fetch("https://secure.przelewy24.pl/api/v1/transaction/register", {
+    //https://secure.przelewy24.pl/api/v1/transaction/register
+
+    const response = await fetch("https://secure.przelewy24.pl/trnRegister", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer 7812c1120629c2a8d6f93fa1564e278d` },
       body: JSON.stringify(orderData),
