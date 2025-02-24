@@ -21,7 +21,7 @@ export default async function handler(
   const description = 'Квиток на конференцію';
   const country = 'PL';
   const urlReturn = 'https://www.beauty-revolution.pl/success';
-  const urlStatus = 'http://localhost:3000/api/paymentStatus'; // Локальний шлях до API
+  const urlStatus = 'https://www.beauty-revolution.pl/api/paymentStatus'; // Локальний шлях до API
 
   const hash = crypto
     .createHash('md5')
