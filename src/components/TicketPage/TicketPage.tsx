@@ -25,34 +25,31 @@ export const TicketPage: React.FC = () => {
 
   const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
 
+  // const orderKey = 'b81d7626'; // Your order key
+  // const crcKey = 'f78903438443d488'; // Your CRC key
+  // const apiKey = '7812c1120629c2a8d6f93fa1564e278d'; // Your API key
+
   const handlePayment = async () => {
-    if (!email) return alert("Будь ласка, введіть ваш email");
+    const res = await fetch("/api/createP24Order", {
+      method: "POST",
+      headers: { "Content-Type": "application.json" },
+      body: JSON.stringify({
+        email,
+        name,
+        surname,
+        phone,
+        amount: ticketPrice * 100,
+      }),
+    });
 
-    try {
-      const response = await fetch("https://www.beauty-revolution.pl/api/createTransaction", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: ticketPrice,
-          email,
-        }),
-      });
+    const data = await res.json();
 
-      const data = await response.json();
-      console.log(data);
-
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;  // Перенаправляємо на сторінку оплати
-      } else {
-        alert("Помилка створення платежу");
-      }
-    } catch (error) {
-      console.error("Помилка оплати:", error);
-      alert("Серверна помилка при оплаті");
+    if (data.redirectUrl) {
+      window.location.href = data.redirectUrl;
     }
-  };
-  
+  }  
 
+  
   return (
     <div className="ticket" id="ticket">
       <div className="ticket__wrapper">
