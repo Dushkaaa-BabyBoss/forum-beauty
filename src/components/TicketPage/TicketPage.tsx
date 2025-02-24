@@ -27,7 +27,7 @@ export const TicketPage: React.FC = () => {
 
   const handlePayment = async () => {
     if (!email) return alert("Будь ласка, введіть ваш email");
-  
+
     try {
       const response = await fetch("https://www.beauty-revolution.pl/api/createTransaction", {
         method: "POST",
@@ -37,14 +37,12 @@ export const TicketPage: React.FC = () => {
           email,
         }),
       });
-    
-      const data = await response.json();
 
+      const data = await response.json();
       console.log(data);
-      
-  
+
       if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
+        window.location.href = data.redirectUrl;  // Перенаправляємо на сторінку оплати
       } else {
         alert("Помилка створення платежу");
       }
