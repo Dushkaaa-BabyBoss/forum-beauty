@@ -1,4 +1,3 @@
-import { error } from 'console';
 import crypto from 'crypto';
 
 export default async function handler(req, res) {
@@ -33,7 +32,7 @@ export default async function handler(req, res) {
     .digest('hex');
   
   try {
-    const response = await fetch("https://secure.przelew24.pl/api/v1/transaction/register", {
+    const response = await fetch("https://secure.przelewy24.pl/api/v1/transaction/register", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer 7812c1120629c2a8d6f93fa1564e278d` },
       body: JSON.stringify(orderData),
@@ -42,7 +41,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     if (data.data && data.data.token) {
       res.status(200).json({
-        redirectUrl: `https://secure.przelew24.pl/trnRequest/${data.data.token}`,
+        redirectUrl: `https://secure.przelewy24.pl/trnRequest/${data.data.token}`,
       });
     } else {
       res.status(500).json(({ error: 'Not initialization payment' }));
