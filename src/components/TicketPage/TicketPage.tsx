@@ -29,7 +29,7 @@ export const TicketPage: React.FC = () => {
     if (!email) return alert("Будь ласка, введіть ваш email");
   
     try {
-      const response = await fetch("/api/createTransaction", {
+      const response = await fetch("https://www.beauty-revolution.pl/api/createTransaction", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -37,12 +37,11 @@ export const TicketPage: React.FC = () => {
           email,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`Помилка: ${response.status}`);
-      }
-  
+    
       const data = await response.json();
+
+      console.log(data);
+      
   
       if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
