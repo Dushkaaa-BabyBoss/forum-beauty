@@ -37,6 +37,10 @@ export const TicketPage: React.FC = () => {
           email,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`Помилка: ${response.status}`);
+      }
   
       const data = await response.json();
   
