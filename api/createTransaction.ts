@@ -34,7 +34,8 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + Buffer.from('b81d7626:f78903438443d488').toString('base64') // ваш Klucz API
+          // 'Authorization': 'Basic ' + Buffer.from('b81d7626:f78903438443d488').toString('base64') // ваш Klucz API
+          'Authorization': `Bearer 7812c1120629c2a8d6f93fa1564e278d`,
         },
         body: formData.toString()
       });
