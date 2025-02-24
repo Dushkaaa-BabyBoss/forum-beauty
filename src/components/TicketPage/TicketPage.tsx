@@ -32,7 +32,7 @@ export const TicketPage: React.FC = () => {
   const handlePayment = async () => {
     const res = await fetch("https://www.beauty-revolution.pl/api/createP24Order", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
         email,
         name,
