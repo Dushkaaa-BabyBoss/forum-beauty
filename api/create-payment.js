@@ -1,5 +1,4 @@
 // api/create-payment.js
-import cors from 'cors';
 import axios from 'axios';
 import crypto from 'crypto';
 
