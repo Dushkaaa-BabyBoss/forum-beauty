@@ -1,52 +1,86 @@
-import express from 'express';
-import fetch from 'node-fetch';
 import cors from 'cors';
+import axios from 'axios';
+import express from 'express';
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:3000', // Allow requests from your frontend
-  methods: ['GET', 'POST', 'OPTIONS'], // Allow necessary HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
-}));
 app.use(express.json());
+app.use(cors());
 
-const PRZELEW24_API_URL = 'https://secure.przelew24.pl/api/v1/'; // Przelew24's endpoint
-const API_KEY = '7812c1120629c2a8d6f93fa1564e278d'; // Replace with your actual API key
-const MERCHANT_ID = 'b81d7626'; // Replace with your merchant ID
+import crypto from 'crypto';
 
-// API endpoint to create a payment session
-app.post('/api/payment', async (req, res) => {
-  const { amount, currency, email, orderId } = req.body;
+function generateSign(sessionId, amount, crc) {
+  if (!sessionId || !amount || !crc) {
+    throw new Error('generateSign: відсутні необхідні параметри!');
+  }
+  const stringToHash = `${MERCHANT_ID}|${sessionId}|${amount}|PLN|${crc}`;
+  return crypto.createHash('sha384').update(stringToHash).digest('hex');
+}
+
+const MERCHANT_ID = 334750;
+const API_KEY = '7812c1120629c2a8d6f93fa1564e278d';
+const CRC = 'f78903438443d488';
+
+app.post('/create-payment', async (req, res) => {
+  console.log('Received request:', req.body);
+  const { email, name, surname, phone, amount } = req.body;
+
+  const sessionId = `session-${Date.now()}`;
+
+  const transactionData = {
+    merchantId: MERCHANT_ID,
+    posId: MERCHANT_ID, // POS ID = MERCHANT_ID
+    sessionId,
+    amount: amount * 100, // Przelewy24 вимагає суми у грошових одиницях
+    currency: 'PLN',
+    description: `Оплата квитка`,
+    email,
+    country: 'PL',
+    language: 'pl',
+    urlReturn: 'http://localhost:3000/payment-success',
+    urlStatus: 'http://localhost:5000/payment-status',
+    // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
+    sign: generateSign(sessionId, amount, CRC), // Потрібно згенерувати правильний sign
+  };
+  console.log('Generated sign:', generateSign(sessionId, amount, CRC)); // Лог сгенерованого підпису
+  console.log('Transaction Data:', transactionData); // Лог транзакційних даних
 
   try {
-    // const response = await fetch(`${PRZELEW24_API_URL}create-payment`, {
-    const response = await fetch(`${PRZELEW24_API_URL}create-payment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        merchant_id: MERCHANT_ID,
-        amount,
-        currency,
-        email,
-        order_id: orderId,
-      }),
-    });
+    const response = await axios.post(
+      'https://secure.przelewy24.pl/api/v1/transaction/register',
+      transactionData,
+      {
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`,
+          // Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${MERCHANT_ID}`).toString('base64')}`,
 
-    const data = await response.json();
-    if (data.success) {
-      res.status(200).json({ success: true, paymentUrl: data.payment_url });
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    console.log('Przelew24 Response:', response); // Лог відповіді від сервера
+
+    if (response.data.error) {
+      console.error('Przelewy24 error:', response.data.error);
+    }
+
+    if (
+      response.status === 200 &&
+      response.data.data &&
+      response.data.data.token
+    ) {
+      res.json({
+        paymentUrl: `https://secure.przelewy24.pl/trnRequest/${response.data.data.token}`,
+      });
     } else {
-      res.status(400).json({ success: false, message: 'Failed to create payment session.' });
+      res.status(500).json({ error: 'Не вдалося створити платіж' });
     }
   } catch (error) {
-    console.error('Error creating payment:', error);
-    res.status(500).json({ success: false, message: 'Internal server error.' });
+    console.error('Request failed with error:', error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.listen(3001, () => {
-  console.log('Server is running on port 3001');
+app.listen(5000, () => {
+  console.log('Server is running on port 5000');
 });
