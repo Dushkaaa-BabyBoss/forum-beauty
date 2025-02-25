@@ -2,9 +2,9 @@
 import axios from 'axios';
 import crypto from 'crypto';
 
-const MERCHANT_ID = 334750;
-const API_KEY = '7812c1120629c2a8d6f93fa1564e278d';
-const CRC = 'f78903438443d488';
+const MERCHANT_ID = process.env.P24_MERCHANT_ID;
+const API_KEY = process.env.P24_API_KEY;
+const CRC = process.env.P24_CRC_KEY;
 
 function generateSign(sessionId, amount, crc) {
   if (!sessionId || !amount || !crc) {
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
       console.log('Przelew24 response data:', response.data);
 
       if (
-        response.data === 200 &&
+        response.status === 200 &&
         response.data.data &&
         response.data.data.token
       ) {
