@@ -32,7 +32,7 @@ export const TicketPage: React.FC = () => {
   const handlePayment = async () => {
     try {
       const response = await fetch(
-        'https://www.beauty-revolution.pl/create-payment',
+        '/api/create-payment',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -45,24 +45,12 @@ export const TicketPage: React.FC = () => {
           }),
         },
       );
-
-      // Перевіряємо статус відповіді
-      // if (!response.ok) {
-      //   throw new Error(`Error: ${response.statusText}`);
-      // }
-      // Перевірте, чи є тіло відповіді
-      const responseText = await response.text(); // Змінив 'data' на 'responseText'
-      console.log('Response text:', responseText); // Логування тексту відповіді
-
-      // Якщо відповідь не порожня, намагаємось перетворити в JSON
-      const parsedData = responseText ? JSON.parse(responseText) : {}; // Змінив 'data' на 'parsedData'
-
-      const data = await response.json();
-      console.log('Payment response:', data); // Для налагодження
-
+  
+      const data = await response.json();  // Якщо ви хочете працювати з JSON
+      console.log('Payment response:', data);
+  
       if (data.paymentUrl) {
-        // Перенаправляємо на сторінку платежу
-        window.location.href = parsedData.paymentUrl;
+        window.location.href = data.paymentUrl;  // Перенаправлення на платіж
       } else {
         alert('Помилка створення платежу');
       }
@@ -71,6 +59,7 @@ export const TicketPage: React.FC = () => {
       alert('Сталася помилка при створенні платежу. Спробуйте ще раз.');
     }
   };
+  
 
   return (
     <div className="ticket" id="ticket">
