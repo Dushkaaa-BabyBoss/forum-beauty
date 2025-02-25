@@ -44,9 +44,9 @@ export const TicketPage: React.FC = () => {
       });
   
       // Перевіряємо статус відповіді
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`Error: ${response.statusText}`);
+      // }
   
       const data = await response.json();
       console.log('Payment response:', data); // Для налагодження
