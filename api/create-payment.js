@@ -1,13 +1,8 @@
 // api/create-payment.js
 import axios from 'axios';
-import { log } from 'console';
 import crypto from 'crypto';
 
 // const MERCHANT_ID = process.env.P24_MERCHANT_ID;
-const API_KEY = process.env.P24_API_KEY;
-const CRC = process.env.P24_CRC_KEY;
-const SECRET_ID = process.env.P24_SECRET_ID;
-
 function generateSign(merchantId, sessionId, amount, crc) {
   if (!sessionId || !amount || !crc) {
     throw new Error('generateSign: відсутні необхідні параметри!');
@@ -23,6 +18,10 @@ export default async function handler(req, res) {
 
     const sessionId = `session-${Date.now()}`;
 
+    const API_KEY = process.env.P24_API_KEY;
+    const CRC = process.env.P24_CRC_KEY;
+    const SECRET_ID = process.env.P24_SECRET_ID;
+
     const transactionData = {
       merchantId: 334750,
       posId: 334750, // POS ID = MERCHANT_ID
@@ -35,7 +34,7 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: generateSign(334750, sessionId, amount, CRC), // Потрібно згенерувати правильний sign
+      sign: generateSign(334750, sessionId, amount * 100, CRC), // Потрібно згенерувати правильний sign
       orderKey: SECRET_ID,
     };
 
