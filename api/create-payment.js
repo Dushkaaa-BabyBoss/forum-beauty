@@ -58,7 +58,7 @@ export default async function handler(req, res) {
         transactionData,
         {
           headers: {
-            Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`,
+            Authorization: `Basic ${Buffer.from(`${334750}:${API_KEY}`).toString('base64')}`,
             'Content-Type': 'application/json',
           },
         },
