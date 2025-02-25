@@ -21,6 +21,7 @@ export default async function handler(req, res) {
     const API_KEY = process.env.P24_API_KEY;
     const CRC = process.env.P24_CRC_KEY;
     const SECRET_ID = process.env.P24_SECRET_ID;
+    const MERCHANT_ID = process.env.P24_MERCHANT_ID || 334750;
 
     const transactionData = {
       merchantId: 334750,
@@ -37,10 +38,6 @@ export default async function handler(req, res) {
       sign: generateSign(334750, sessionId, amount * 100, CRC), // Потрібно згенерувати правильний sign
       orderKey: SECRET_ID,
     };
-
-    console.log('sessionId: ', sessionId);
-    console.log('amount: ', amount);
-    console.log('CRC: ', CRC);
 
     console.log(
       'Generated sign:',
