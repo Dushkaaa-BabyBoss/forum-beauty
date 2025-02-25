@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 // const MERCHANT_ID = process.env.P24_MERCHANT_ID;
 function generateSign(merchantId, sessionId, amount, crc) {
-  if (!sessionId || !amount || !crc) {
+  if (!sessionId || !amount || !crc || !merchantId) {
     throw new Error('generateSign: відсутні необхідні параметри!');
   }
   const stringToHash = `${sessionId}|${merchantId}|${amount}|PLN|${crc}`;
