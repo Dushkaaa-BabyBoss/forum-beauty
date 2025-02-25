@@ -10,7 +10,7 @@ function generateSign(sessionId, amount, crc) {
   if (!sessionId || !amount || !crc) {
     throw new Error('generateSign: відсутні необхідні параметри!');
   }
-  const stringToHash = `${MERCHANT_ID}|${sessionId}|${amount}|PLN|${crc}`;
+  const stringToHash = `${sessionId}|${MERCHANT_ID}|${amount}|PLN|${crc}`;
   return crypto.createHash('sha384').update(stringToHash).digest('hex');
 }
 
@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       urlReturn: 'https://www.beauty-revolution.pl/payment-success',
       urlStatus: 'https://www.beauty-revolution.pl/payment-status',
       sign: generateSign(sessionId, amount, CRC), // Потрібно згенерувати правильний sign
+      orderKey: 'b81d7626',
     };
 
     console.log('Generated sign:', generateSign(sessionId, amount, CRC));
