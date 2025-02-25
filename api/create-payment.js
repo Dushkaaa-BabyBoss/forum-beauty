@@ -1,5 +1,6 @@
 // api/create-payment.js
 import axios from 'axios';
+import { log } from 'console';
 import crypto from 'crypto';
 
 const MERCHANT_ID = process.env.P24_MERCHANT_ID;
@@ -35,8 +36,13 @@ export default async function handler(req, res) {
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
       sign: generateSign(MERCHANT_ID, sessionId, amount, CRC), // Потрібно згенерувати правильний sign
-      orderKey: 'b81d7626',
+      orderKey: SECRET_ID,
     };
+
+    console.log('MerchandId: ', MERCHANT_ID);
+    console.log('sessionId: ', sessionId);
+    console.log('amount: ', amount);
+    console.log('CRC: ', CRC);
 
     console.log(
       'Generated sign:',
@@ -51,10 +57,6 @@ export default async function handler(req, res) {
         'https://secure.przelewy24.pl/api/v1/transaction/register',
         transactionData,
         {
-          // headers: {
-          //   Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`,
-          //   'Content-Type': 'application/json',
-          // },
           headers: {
             Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`,
             'Content-Type': 'application/json',
