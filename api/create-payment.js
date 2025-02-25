@@ -38,7 +38,13 @@ export default async function handler(req, res) {
       orderKey: 'b81d7626',
     };
 
-    console.log('Generated sign:', generateSign(MERCHANT_ID, sessionId, amount, CRC));
+    console.log(
+      'Generated sign:',
+      generateSign(MERCHANT_ID, sessionId, amount, CRC),
+    );
+
+    const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
+    console.log('Authorization header:', authHeader); // Перевірка заголовка
 
     try {
       const response = await axios.post(
