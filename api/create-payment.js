@@ -3,7 +3,7 @@ import axios from 'axios';
 import { log } from 'console';
 import crypto from 'crypto';
 
-const MERCHANT_ID = process.env.P24_MERCHANT_ID;
+// const MERCHANT_ID = process.env.P24_MERCHANT_ID;
 const API_KEY = process.env.P24_API_KEY;
 const CRC = process.env.P24_CRC_KEY;
 const SECRET_ID = process.env.P24_SECRET_ID;
@@ -24,8 +24,8 @@ export default async function handler(req, res) {
     const sessionId = `session-${Date.now()}`;
 
     const transactionData = {
-      merchantId: MERCHANT_ID,
-      posId: MERCHANT_ID, // POS ID = MERCHANT_ID
+      merchantId: 334750,
+      posId: 334750, // POS ID = MERCHANT_ID
       sessionId,
       amount: amount * 100, // Przelewy24 вимагає суми у грошових одиницях
       currency: 'PLN',
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: generateSign(MERCHANT_ID, sessionId, amount, CRC), // Потрібно згенерувати правильний sign
+      sign: generateSign(334750, sessionId, amount, CRC), // Потрібно згенерувати правильний sign
       orderKey: SECRET_ID,
     };
 
