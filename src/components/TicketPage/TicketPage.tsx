@@ -25,41 +25,33 @@ export const TicketPage: React.FC = () => {
 
   const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
 
-  // const orderKey = 'b81d7626'; // Your order key
-  // const crcKey = 'f78903438443d488'; // Your CRC key
-  // const apiKey = '7812c1120629c2a8d6f93fa1564e278d'; // Your API key
-
   const handlePayment = async () => {
     try {
-      const response = await fetch(
-        '/api/create-payment',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            name,
-            surname,
-            phone,
-            amount: ticketPrice,
-          }),
-        },
-      );
-  
-      const data = await response.json();  // Якщо ви хочете працювати з JSON
+      const response = await fetch('api/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          name,
+          surname,
+          phone,
+          amount: ticketPrice,
+        }),
+      });
+
+      const data = await response.json(); // Якщо ви хочете працювати з JSON
       console.log('Payment response:', data);
-  
+
       if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;  // Перенаправлення на платіж
+        window.location.href = data.paymentUrl; // Перенаправлення на платіж
       } else {
         alert('Помилка створення платежу');
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      // console.error('Payment error:', error);
       alert('Сталася помилка при створенні платежу. Спробуйте ще раз.');
     }
   };
-  
 
   return (
     <div className="ticket" id="ticket">
