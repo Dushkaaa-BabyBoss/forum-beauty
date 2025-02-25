@@ -57,10 +57,15 @@ export default async function handler(req, res) {
       console.log('Przelew24 response status:', response.status);
       console.log('Przelew24 response data:', response.data);
 
-      if (response.data === 200 && response.data.data && response.data.data.token) {
+      if (
+        response.data === 200 &&
+        response.data.data &&
+        response.data.data.token
+      ) {
         res.json({
           paymentUrl: `https://secure.przelewy24.pl/trnRequest/${response.data.data.token}`,
         });
+        console.log(response.data.data.token);
       } else {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
       }
