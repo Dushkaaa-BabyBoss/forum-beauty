@@ -38,7 +38,6 @@ export default async function handler(req, res) {
       orderKey: SECRET_ID,
     };
 
-    console.log('MerchandId: ', MERCHANT_ID);
     console.log('sessionId: ', sessionId);
     console.log('amount: ', amount);
     console.log('CRC: ', CRC);
