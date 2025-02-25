@@ -32,8 +32,8 @@ export default async function handler(req, res) {
       email,
       country: 'PL',
       language: 'pl',
-      urlReturn: 'https://www.beauty-revolution.pl/payment-success',
-      urlStatus: 'https://www.beauty-revolution.pl/payment-status',
+      urlReturn: 'https://www.beauty-revolution.pl/',
+      // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
       sign: generateSign(MERCHANT_ID, sessionId, amount, CRC), // Потрібно згенерувати правильний sign
       orderKey: 'b81d7626',
     };
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
           //   'Content-Type': 'application/json',
           // },
           headers: {
-            Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${SECRET_ID}`).toString('base64')}`,
+            Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`,
             'Content-Type': 'application/json',
           },
         },
