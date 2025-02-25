@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       country: 'PL',
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/payment-success',
-      urlStatus: 'https://forum-beauty.vercel.app/payment-status',
+      urlStatus: 'https://www.beauty-revolution.pl/payment-status',
       sign: generateSign(sessionId, amount, CRC), // Потрібно згенерувати правильний sign
     };
 
