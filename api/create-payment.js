@@ -5,6 +5,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
   if (req.method === 'POST') {
     console.log('Received request:', req.body);
     const { email, name, surname, phone, amount } = req.body;
@@ -12,24 +16,29 @@ export default async function handler(req, res) {
     const sessionId = `session-${Date.now()}`;
 
     const API_KEY = process.env.P24_API_KEY;
-    // const CRC = process.env.P24_CRC_KEY;
+    const CRC = process.env.P24_CRC_KEY;
     const SECRET_ID = process.env.P24_SECRET_ID;
     const MERCHANT_ID = process.env.P24_MERCHANT_ID;
-    const CRC = '9b1521e65a03556b';
+    // const CRC = '9b1521e65a03556b';
 
     const cost = amount * 100;
-    console.log('Loaded CRC:', CRC);
 
-    console.log('sessionId:', sessionId);
-    console.log('merchantId:', MERCHANT_ID);
-    console.log('amount:', amount);
-    console.log('crc:', CRC);
 
     const stringToHash = `${sessionId}|${MERCHANT_ID}|${cost}|PLN|${CRC}`;
 
 // Додавання секретного ключа і обчислення SHA384 хешу
     const hashString = `${stringToHash}${SECRET_ID}`;
     const generatedCRC = crypto.createHash('sha384').update(hashString).digest('hex');
+
+    console.log('sessionId:', sessionId);
+    console.log('merchantId:', MERCHANT_ID);
+    console.log('cost:', cost);
+    console.log('currency:', 'PLN');
+    console.log('crc:', CRC);
+    console.log('secretId:', SECRET_ID);
+    console.log('stringToHash:', stringToHash);
+    console.log('hashString:', hashString);
+    console.log('generatedCRC:', generatedCRC);
 
     const transactionData = {
       merchantId: MERCHANT_ID,
