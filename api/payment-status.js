@@ -7,13 +7,6 @@ dotenv.config();
 
 const payments = {};
 
-function generateSign(sessionId, orderId, amount, currency) {
-  const CRC = process.env.P24_TEST_CRC_KEY;
-
-  const signString = `${sessionId}|${orderId}|${amount}|${currency}|${CRC}`; // ✅ Формуємо рядок без JSON
-  return crypto.createHash('sha384').update(signString).digest('hex'); // ✅ Хешуємо SHA384
-}
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -26,23 +19,26 @@ export default async function handler(req, res) {
   const CRC = process.env.P24_TEST_CRC_KEY;
   const API_KEY = process.env.P24_TEST_API_KEY;
 
-  // ✅ Перевірка правильності підпису
-  // const signString = JSON.stringify(
-  //   { sessionId, orderId, amount, currency, crc: CRC },
-  //   null,
-  //   0
-  // );
-  // const generatedCRC = crypto.createHash('sha384').update(signString).digest('hex');
+  const checksumData = {
+    sessionId: sessionId,
+    merchantId: Number(MERCHANT_ID),
+    amount: amount,
+    currency: currency,
+    crc: CRC,
+  };
 
-  // if (sign !== generatedCRC) {
-  //   console.error('❌ Invalid sign:', { received: sign, expected: generatedCRC });
-  //   return res.status(400).json({ error: 'Invalid sign' });
-  // }
+  const stringToHash = JSON.stringify(checksumData, null, 0); // Формуємо рядок без пробілів і escape-символів
 
-  const expectedSign = generateSign(sessionId, orderId, amount, currency);
+  const generatedCRC = crypto
+    .createHash('sha384')
+    .update(stringToHash)
+    .digest('hex');
 
-  if (sign !== expectedSign) {
-    console.error('❌ Invalid sign:', { received: sign, expected: expectedSign });
+  if (sign !== generatedCRC) {
+    console.error('❌ Invalid sign:', {
+      received: sign,
+      expected: generatedCRC,
+    });
     return res.status(400).json({ error: 'Invalid sign' });
   }
 
@@ -53,9 +49,12 @@ export default async function handler(req, res) {
     const verificationSignString = JSON.stringify(
       { sessionId, orderId, amount, currency, crc: CRC },
       null,
-      0
+      0,
     );
-    const verificationSign = crypto.createHash('sha384').update(verificationSignString).digest('hex');
+    const verificationSign = crypto
+      .createHash('sha384')
+      .update(verificationSignString)
+      .digest('hex');
 
     const verificationData = {
       merchantId: MERCHANT_ID,
@@ -64,7 +63,7 @@ export default async function handler(req, res) {
       amount,
       currency,
       orderId,
-      sign: verificationSign,
+      sign: generatedCRC,
     };
 
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
@@ -78,7 +77,7 @@ export default async function handler(req, res) {
             Authorization: authHeader,
             'Content-Type': 'application/json',
           },
-        }
+        },
       );
 
       console.log('🔍 Verification response:', verificationResponse.data);
@@ -97,7 +96,14 @@ export default async function handler(req, res) {
         const { email, name, surname, ticketType, phone } = paymentInfo;
 
         // Відправляємо email
-        const emailResponse = await sendEmail(email, name, surname, ticketType, amount / 100, phone);
+        const emailResponse = await sendEmail(
+          email,
+          name,
+          surname,
+          ticketType,
+          amount / 100,
+          phone,
+        );
         if (emailResponse.success) {
           console.log('📩 Email успішно відправлено:', email);
         } else {
@@ -106,11 +112,19 @@ export default async function handler(req, res) {
 
         return res.status(200).json({ success: true });
       } else {
-        console.error('❌ Transaction verification failed:', verificationResponse.data);
-        return res.status(400).json({ error: 'Transaction verification failed' });
+        console.error(
+          '❌ Transaction verification failed:',
+          verificationResponse.data,
+        );
+        return res
+          .status(400)
+          .json({ error: 'Transaction verification failed' });
       }
     } catch (error) {
-      console.error('❌ Error during verification:', error.response?.data || error.message);
+      console.error(
+        '❌ Error during verification:',
+        error.response?.data || error.message,
+      );
       return res.status(500).json({ error: 'Verification request failed' });
     }
   } else {
