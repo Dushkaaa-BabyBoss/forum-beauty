@@ -32,7 +32,6 @@ export default async function handler(req, res) {
   console.log('sessionId', sessionId);
   console.log('orderId', orderId);
   console.log('status', status);
-  console.log('amount', cost);
   console.log('currency', currency);
   console.log('sign', sign);
 
