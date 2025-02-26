@@ -85,9 +85,6 @@ export default async function handler(req, res) {
         response.data.data &&
         response.data.data.token
       ) {
-        res.json({
-          paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
-        });
         const emailResponse = await sendEmail(
           email,
           name,
@@ -102,6 +99,9 @@ export default async function handler(req, res) {
         } else {
           console.error('Не вдалося надіслати email:', emailResponse.error);
         }
+        res.json({
+          paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
+        });
         console.log(response.data.data.token);
       } else {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
