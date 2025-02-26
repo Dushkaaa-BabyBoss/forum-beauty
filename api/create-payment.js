@@ -92,6 +92,42 @@ export default async function handler(req, res) {
       } else {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
       }
+      ////////////
+      const transactionVerificationData = {
+        merchantId: MERCHANT_ID,
+        posId: MERCHANT_ID,
+        sessionId: sessionId,
+        amount: cost,
+        currency: 'PLN',
+        orderId: response.data.data.orderId, // Використовуємо orderId з відповіді
+        sign: generatedCRC,
+      };
+
+      const verificationResponse = await axios.put(
+        'https://sandbox.przelewy24.pl/api/v1/transaction/verify',
+        transactionVerificationData,
+        {
+          headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (verificationResponse.status === 200) {
+        console.log('✅ Transaction verified successfully');
+      } else {
+        console.error(
+          '❌ Transaction verification failed:',
+          verificationResponse.data,
+        );
+        return res
+          .status(400)
+          .json({ error: 'Transaction verification failed' });
+      }
+
+      // 5. Повертаємо успішний результат з URL для платежу
+      res.json({ paymentUrl });
     } catch (error) {
       console.log('Przelewy24 error:', error.response?.data || error.message);
       res.status(500).json({ error: error.message });
