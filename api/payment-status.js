@@ -27,6 +27,13 @@ export default async function handler(req, res) {
     crc: CRC,
   };
 
+  console.log('sessionId', sessionId);
+  console.log('orderId', orderId);
+  console.log('status', status);
+  console.log('amount', amount);
+  console.log('currency', currency);
+  console.log('sign', sign);
+
   const stringToHash = JSON.stringify(checksumData, null, 0); // Формуємо рядок без пробілів і escape-символів
 
   const generatedCRC = crypto
@@ -42,6 +49,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid sign' });
   }
 
+  console.log('generatedCRC', generatedCRC);
+
   if (status === 'SUCCESS') {
     console.log('✅ Payment successful, verifying transaction...');
 
@@ -51,10 +60,14 @@ export default async function handler(req, res) {
       null,
       0,
     );
+    console.log('verificationSignString', verificationSignString);
+
     const verificationSign = crypto
       .createHash('sha384')
       .update(verificationSignString)
       .digest('hex');
+
+    console.log('verificationSign', verificationSign);
 
     const verificationData = {
       merchantId: MERCHANT_ID,
@@ -63,8 +76,10 @@ export default async function handler(req, res) {
       amount,
       currency,
       orderId,
-      sign: generatedCRC,
+      sign: verificationSign,
     };
+
+    console.log('verificationData', verificationData);
 
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
 
