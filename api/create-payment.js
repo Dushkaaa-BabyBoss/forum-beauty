@@ -2,7 +2,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { sendEmail } from './sendEmail';
+import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
