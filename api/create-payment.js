@@ -4,7 +4,6 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// const MERCHANT_ID = process.env.P24_MERCHANT_ID;
 function generateSign(merchantId, sessionId, amount, crc) {
   if (!sessionId || !amount || !crc || !merchantId) {
     throw new Error('generateSign: відсутні необхідні параметри!');
@@ -27,12 +26,13 @@ export default async function handler(req, res) {
 
     const cost = amount * 100;
     console.log('Loaded CRC:', CRC);
+    const sign = generateSign(MERCHANT_ID, sessionId, cost, CRC);
 
     const transactionData = {
-      merchantId: 334750,
-      posId: 334750, // POS ID = MERCHANT_ID
+      merchantId: MERCHANT_ID,
+      posId: MERCHANT_ID, // POS ID = MERCHANT_ID
       sessionId: sessionId,
-      amount: cost, // Przelewy24 вимагає суми у грошових одиницях
+      amount: cost,
       currency: 'PLN',
       description: `Оплата квитка`,
       email,
@@ -40,11 +40,11 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: generateSign(334750, sessionId, cost, CRC), // Потрібно згенерувати правильний sign
+      sign: sign,
     };
 
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
-    console.log('Authorization header:', authHeader); // Перевірка заголовка
+    console.log('Authorization header:', authHeader);
 
     try {
       const response = await axios.post(
