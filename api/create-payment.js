@@ -31,8 +31,8 @@ export default async function handler(req, res) {
     const transactionData = {
       merchantId: 334750,
       posId: 334750, // POS ID = MERCHANT_ID
-      sessionId,
-      amount: amount * 100, // Przelewy24 вимагає суми у грошових одиницях
+      sessionId: sessionId,
+      amount: cost, // Przelewy24 вимагає суми у грошових одиницях
       currency: 'PLN',
       description: `Оплата квитка`,
       email,
@@ -40,8 +40,7 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: generateSign(334750, sessionId, cost, 'f78903438443d488'), // Потрібно згенерувати правильний sign
-      orderKey: SECRET_ID,
+      sign: generateSign(334750, sessionId, cost, CRC), // Потрібно згенерувати правильний sign
     };
 
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
@@ -53,8 +52,7 @@ export default async function handler(req, res) {
         transactionData,
         {
           headers: {
-            Authorization: `Basic ${Buffer.from(`334750:7812c1120629c2a8d6f93fa1564e278d`).toString('base64')}`,
-            // Authorization: `Basic ${BASE64_ENCODED("334750:7812c1120629c2a8d6f93fa1564e278d")}`
+            Authorization: authHeader,
             'Content-Type': 'application/json',
           },
         },
