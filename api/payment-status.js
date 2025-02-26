@@ -7,6 +7,13 @@ dotenv.config();
 
 const payments = {};
 
+function generateSign(sessionId, orderId, amount, currency) {
+  const CRC = process.env.P24_TEST_CRC_KEY;
+
+  const signString = `${sessionId}|${orderId}|${amount}|${currency}|${CRC}`; // ✅ Формуємо рядок без JSON
+  return crypto.createHash('sha384').update(signString).digest('hex'); // ✅ Хешуємо SHA384
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -20,15 +27,22 @@ export default async function handler(req, res) {
   const API_KEY = process.env.P24_TEST_API_KEY;
 
   // ✅ Перевірка правильності підпису
-  const signString = JSON.stringify(
-    { sessionId, orderId, amount, currency, crc: CRC },
-    null,
-    0
-  );
-  const generatedCRC = crypto.createHash('sha384').update(signString).digest('hex');
+  // const signString = JSON.stringify(
+  //   { sessionId, orderId, amount, currency, crc: CRC },
+  //   null,
+  //   0
+  // );
+  // const generatedCRC = crypto.createHash('sha384').update(signString).digest('hex');
 
-  if (sign !== generatedCRC) {
-    console.error('❌ Invalid sign:', { received: sign, expected: generatedCRC });
+  // if (sign !== generatedCRC) {
+  //   console.error('❌ Invalid sign:', { received: sign, expected: generatedCRC });
+  //   return res.status(400).json({ error: 'Invalid sign' });
+  // }
+
+  const expectedSign = generateSign(sessionId, orderId, amount, currency);
+
+  if (sign !== expectedSign) {
+    console.error('❌ Invalid sign:', { received: sign, expected: expectedSign });
     return res.status(400).json({ error: 'Invalid sign' });
   }
 
