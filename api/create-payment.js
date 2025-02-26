@@ -25,6 +25,7 @@ export default async function handler(req, res) {
     const MERCHANT_ID = process.env.P24_MERCHANT_ID || 334750;
 
     const cost = amount * 100;
+    console.log('Loaded CRC:', CRC);
 
     const transactionData = {
       merchantId: 334750,
@@ -38,7 +39,7 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: generateSign(334750, sessionId, cost, 'f78903438443d488'), // Потрібно згенерувати правильний sign
+      sign: generateSign(334750, sessionId, cost, f78903438443d488), // Потрібно згенерувати правильний sign
       orderKey: SECRET_ID,
     };
 
