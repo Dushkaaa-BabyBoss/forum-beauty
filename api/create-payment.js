@@ -1,6 +1,7 @@
 // api/create-payment.js
 import axios from 'axios';
 import crypto from 'crypto';
+import 'dotenv/config';
 
 // const MERCHANT_ID = process.env.P24_MERCHANT_ID;
 function generateSign(merchantId, sessionId, amount, crc) {
@@ -41,10 +42,10 @@ export default async function handler(req, res) {
       orderKey: SECRET_ID,
     };
 
-    console.log(
-      'Generated sign:',
-      generateSign(MERCHANT_ID, sessionId, amount, CRC),
-    );
+    // console.log(
+    //   'Generated sign:',
+    //   generateSign(MERCHANT_ID, sessionId, amount, CRC),
+    // );
 
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
     console.log('Authorization header:', authHeader); // Перевірка заголовка
