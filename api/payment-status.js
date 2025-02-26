@@ -36,8 +36,9 @@ export const verifyTransaction = async (sessionId, orderId, amount) => {
     sign: generateCRC(sessionId, orderId, amount, 'PLN', CRC),  // Генерація контрольної суми
   };
 
+  console.log('Verification data:', verificationData);
   try {
-    const response = await axios.post(
+    const response = await axios.put(
       'https://sandbox.przelewy24.pl/api/v1/transaction/verify', // Використовуємо URL для верифікації
       verificationData,
       {
@@ -47,6 +48,9 @@ export const verifyTransaction = async (sessionId, orderId, amount) => {
         },
       }
     );
+
+    console.log('orderId', verificationData.orderId);
+    
 
     if (response.status === 200 && response.data.success) {
       console.log('✅ Transakcja zweryfikowana pomyślnie');
