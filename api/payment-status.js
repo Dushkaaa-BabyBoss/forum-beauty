@@ -1,46 +1,106 @@
+import axios from 'axios';
 import crypto from 'crypto';
 import { sendEmail } from './emailService';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
+const payments = {};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { sessionId, orderId, status, amount, currency, sign, email, name, surname, ticketType, phone } = req.body;
+  console.log('🔄 Payment status received:', req.body);
 
-  console.log('Payment status received:', req.body);
+  const { sessionId, orderId, status, amount, currency, sign } = req.body;
+  const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
+  const CRC = process.env.P24_TEST_CRC_KEY;
+  const API_KEY = process.env.P24_TEST_API_KEY;
 
-  // Перевірка правильності підпису
-  const generatedSign = generateSign(req.body);
-  if (sign !== generatedSign) {
+  // ✅ Перевірка правильності підпису
+  const signString = JSON.stringify(
+    { sessionId, orderId, amount, currency, crc: CRC },
+    null,
+    0
+  );
+  const generatedCRC = crypto.createHash('sha384').update(signString).digest('hex');
+
+  if (sign !== generatedCRC) {
+    console.error('❌ Invalid sign:', { received: sign, expected: generatedCRC });
     return res.status(400).json({ error: 'Invalid sign' });
   }
 
   if (status === 'SUCCESS') {
-    console.log('✅ Payment successful');
+    console.log('✅ Payment successful, verifying transaction...');
 
-    // Відправка email користувачу
-    const emailResponse = await sendEmail(email, name, surname, ticketType, amount, phone);
-    if (emailResponse.success) {
-      console.log('📩 Email успішно відправлено!');
-    } else {
-      console.error('❌ Помилка при відправці email:', emailResponse.error);
+    // ✅ Верифікація транзакції через API Przelewy24
+    const verificationSignString = JSON.stringify(
+      { sessionId, orderId, amount, currency, crc: CRC },
+      null,
+      0
+    );
+    const verificationSign = crypto.createHash('sha384').update(verificationSignString).digest('hex');
+
+    const verificationData = {
+      merchantId: MERCHANT_ID,
+      posId: MERCHANT_ID,
+      sessionId,
+      amount,
+      currency,
+      orderId,
+      sign: verificationSign,
+    };
+
+    const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
+
+    try {
+      const verificationResponse = await axios.put(
+        'https://sandbox.przelewy24.pl/api/v1/transaction/verify',
+        verificationData,
+        {
+          headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('🔍 Verification response:', verificationResponse.data);
+
+      if (verificationResponse.status === 200) {
+        console.log('✅ Transaction verified successfully');
+
+        // Отримуємо email та інші дані із сховища
+        const paymentInfo = payments[sessionId];
+
+        if (!paymentInfo) {
+          console.error('❌ Payment info not found for session:', sessionId);
+          return res.status(400).json({ error: 'Payment info not found' });
+        }
+
+        const { email, name, surname, ticketType, phone } = paymentInfo;
+
+        // Відправляємо email
+        const emailResponse = await sendEmail(email, name, surname, ticketType, amount / 100, phone);
+        if (emailResponse.success) {
+          console.log('📩 Email успішно відправлено:', email);
+        } else {
+          console.error('❌ Помилка при відправці email:', emailResponse.error);
+        }
+
+        return res.status(200).json({ success: true });
+      } else {
+        console.error('❌ Transaction verification failed:', verificationResponse.data);
+        return res.status(400).json({ error: 'Transaction verification failed' });
+      }
+    } catch (error) {
+      console.error('❌ Error during verification:', error.response?.data || error.message);
+      return res.status(500).json({ error: 'Verification request failed' });
     }
-
-    res.status(200).json({ success: true });
   } else {
     console.log('❌ Payment failed');
-    res.status(200).json({ success: false });
+    return res.status(200).json({ success: false });
   }
-}
-
-// Функція генерації підпису для перевірки автентичності відповіді від P24
-function generateSign(data) {
-  const { sessionId, merchantId, amount, currency } = data;
-  const CRC = process.env.P24_TEST_CRC_KEY;
-  const stringToHash = `${sessionId}|${merchantId}|${amount}|${currency}|${CRC}`;
-  return crypto.createHash('sha384').update(stringToHash).digest('hex');
 }
