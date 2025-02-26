@@ -19,6 +19,13 @@ export default async function handler(req, res) {
   const CRC = process.env.P24_TEST_CRC_KEY;
   const API_KEY = process.env.P24_TEST_API_KEY;
 
+  console.log('CRC', CRC);
+  console.log('MERCHANT_ID', MERCHANT_ID);
+  console.log('API_KEY', API_KEY);
+  
+  
+  
+
   const checksumData = {
     sessionId: sessionId,
     orderId: orderId,
@@ -31,7 +38,6 @@ export default async function handler(req, res) {
 
   console.log('sessionId', sessionId);
   console.log('orderId', orderId);
-  console.log('status', status);
   console.log('currency', currency);
   console.log('sign', sign);
 
