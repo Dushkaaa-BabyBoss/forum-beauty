@@ -7,14 +7,8 @@ dotenv.config();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
-
-  if (req.method === 'POST') {
     console.log('Received request:', req.body);
-    const { email, name, surname, phone, amount, ticketType } = req.body;
-
-    const sessionId = `session-${Date.now()}`;
+    const { email, amount, orderId, status, sessionId } = req.body;
 
     // const API_KEY = process.env.P24_API_KEY;
     // const CRC = process.env.P24_CRC_KEY;
@@ -30,8 +24,8 @@ export default async function handler(req, res) {
 
     const checksumData = {
       sessionId: sessionId,
-      merchantId: Number(MERCHANT_ID),
-      amount: cost,
+      orderId: orderId,
+      amount: amount,
       currency: 'PLN',
       crc: CRC,
     };
@@ -47,14 +41,9 @@ export default async function handler(req, res) {
       merchantId: MERCHANT_ID,
       posId: MERCHANT_ID,
       sessionId: sessionId,
-      amount: cost,
+      amount: amount,
       currency: 'PLN',
-      description: `Оплата квитка`,
-      email,
-      country: 'PL',
-      language: 'pl',
-      urlReturn: 'https://www.beauty-revolution.pl/',
-      urlStatus: 'https://www.beauty-revolution.pl/api/example',
+      orderId: orderId,
       sign: generatedCRC,
     };
 
@@ -62,8 +51,8 @@ export default async function handler(req, res) {
     console.log('Authorization header:', authHeader);
 
     try {
-      const response = await axios.post(
-        'https://sandbox.przelewy24.pl/api/v1/transaction/register',
+      const verificationResponse = await axios.put(
+        'https://sandbox.przelewy24.pl/api/v1/transaction/verify',
         transactionData,
         {
           headers: {
@@ -73,24 +62,16 @@ export default async function handler(req, res) {
         },
       );
 
-      if (response.data.error) {
-        console.error('Przelewy24 error:', response.data.error);
-      }
-
-      console.log('Przelew24 response status:', response.status);
-      console.log('Przelew24 response data:', response.data);
-
-      if (
-        response.status === 200 &&
-        response.data.data &&
-        response.data.data.token
-      ) {
-        res.json({
-          paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
-        });
-        console.log(response.data.data.token);
+      if (verificationResponse.status === 200) {
+        console.log('✅ Transaction verified successfully');
       } else {
-        res.status(500).json({ error: 'Не вдалося створити платіж' });
+        console.error(
+          '❌ Transaction verification failed:',
+          verificationResponse.data,
+        );
+        return res
+          .status(400)
+          .json({ error: 'Transaction verification failed' });
       }
     } catch (error) {
       console.log('Przelewy24 error:', error.response?.data || error.message);
