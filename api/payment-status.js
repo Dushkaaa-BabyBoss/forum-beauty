@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       res.status(500).json({ error: 'Не вдалося надіслати email' });
     }
   } else {
-    // Якщо транзакція не була успішною
+    // Якщо транзакція не була успішн
     console.error('Платіж не був успішним');
     res.status(400).json({ error: 'Платіж не був успішним' });
   }
