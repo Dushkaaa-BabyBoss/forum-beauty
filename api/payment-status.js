@@ -23,14 +23,16 @@ export default async function handler(req, res) {
     sessionId: sessionId,
     merchantId: Number(MERCHANT_ID),
     amount: amount,
-    currency: currency,
+    currency: 'PLN',
     crc: CRC,
   };
+
+  console.log(checksumData);
 
   console.log('sessionId', sessionId);
   console.log('orderId', orderId);
   console.log('status', status);
-  console.log('amount', amount);
+  console.log('amount', cost);
   console.log('currency', currency);
   console.log('sign', sign);
 
@@ -40,6 +42,7 @@ export default async function handler(req, res) {
     .createHash('sha384')
     .update(stringToHash)
     .digest('hex');
+  console.log(generatedCRC);
 
   if (sign !== generatedCRC) {
     console.error('❌ Invalid sign:', {
