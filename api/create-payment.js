@@ -221,6 +221,12 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Не вдалося отримати токен транзакції' });
       }
 
+      const orderId = response.data.data?.orderId;
+      if (!orderId) {
+        console.error('❌ No orderId received:', response.data);
+        return res.status(500).json({ error: 'Не вдалося отримати orderId' });
+      }
+
       // 3. Повертаємо URL для платежу
       const paymentUrl = `https://sandbox.przelewy24.pl/trnRequest/${token}`;
       console.log('Payment URL:', paymentUrl);
