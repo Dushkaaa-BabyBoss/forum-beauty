@@ -53,7 +53,7 @@ export default async function handler(req, res) {
       country: 'PL',
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
-      urlStatus: 'https://www.beauty-revolution.pl/payment-status',
+      urlStatus: 'https://www.beauty-revolution.pl/api/payment-status',
       sign: generatedCRC,
     };
 
