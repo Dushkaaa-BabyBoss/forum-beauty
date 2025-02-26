@@ -22,9 +22,6 @@ export default async function handler(req, res) {
   console.log('CRC', CRC);
   console.log('MERCHANT_ID', MERCHANT_ID);
   console.log('API_KEY', API_KEY);
-  
-  
-  
 
   const checksumData = {
     sessionId: sessionId,
@@ -43,32 +40,28 @@ export default async function handler(req, res) {
 
   const stringToHash = JSON.stringify(checksumData, null, 0); // Формуємо рядок без пробілів і escape-символів
 
-  const generatedCRC = crypto
+  const generatedSign = crypto
     .createHash('sha384')
     .update(stringToHash)
     .digest('hex');
-  console.log(generatedCRC);
+  console.log(generatedSign);
 
-  if (sign !== generatedCRC) {
+  if (sign !== generatedSign) {
     console.error('❌ Invalid sign:', {
       received: sign,
-      expected: generatedCRC,
+      expected: generatedSign,
     });
     return res.status(400).json({ error: 'Invalid sign' });
   }
 
-  console.log('generatedCRC', generatedCRC);
+  console.log('generatedCRC', generatedSign);
 
   if (status === 'SUCCESS') {
     console.log('✅ Payment successful, verifying transaction...');
 
     // ✅ Верифікація транзакції через API Przelewy24
-    const verificationSignString = JSON.stringify(
-      { sessionId, orderId, amount, currency, crc: CRC },
-      null,
-      0,
-    );
-    console.log('verificationSignString', verificationSignString);
+    const verificationSignString = `${MERCHANT_ID}|${MERCHANT_ID}|${sessionId}|${amount}|${currency}|${orderId}|${CRC}`;
+    console.log('verificationSignString:', verificationSignString);
 
     const verificationSign = crypto
       .createHash('sha384')
