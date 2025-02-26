@@ -1,35 +1,62 @@
-// api/payment-status.js
-import { sendEmail } from './emailService';
+import axios from 'axios';
+import crypto from 'crypto';
+import dotenv from 'dotenv';
+dotenv.config();
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
+const API_KEY = process.env.P24_TEST_API_KEY;
+const CRC = process.env.P24_TEST_CRC_KEY;
 
-  const { status, sessionId, amount, email, name, surname, phone, ticketType } = req.body;
+// Базова авторизація для API
+const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
 
-  // Перевіряємо статус транзакції
-  if (status === 'success') {
-    // Якщо оплата пройшла успішно
-    const emailResponse = await sendEmail(
-      email,
-      name,
-      surname,
-      ticketType,
-      amount,
-      phone,
+// Функція для генерації контрольної суми
+const generateCRC = (sessionId, orderId, amount, currency, crcKey) => {
+  const data = {
+    sessionId: sessionId,
+    orderId: orderId,
+    amount: amount,
+    currency: currency,
+    crc: crcKey,
+  };
+
+  const stringToHash = JSON.stringify(data, null, 0);
+  return crypto.createHash('sha384').update(stringToHash).digest('hex');
+};
+
+// Функція для верифікації транзакції
+export const verifyTransaction = async (sessionId, orderId, amount) => {
+  const verificationData = {
+    merchantId: MERCHANT_ID,
+    posId: MERCHANT_ID,
+    sessionId: sessionId,
+    amount: amount,
+    currency: 'PLN',  // Валюта, за замовчуванням PLN
+    orderId: orderId,
+    sign: generateCRC(sessionId, orderId, amount, 'PLN', CRC),  // Генерація контрольної суми
+  };
+
+  try {
+    const response = await axios.post(
+      'https://sandbox.przelewy24.pl/api/v1/transaction/verify', // Використовуємо URL для верифікації
+      verificationData,
+      {
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+      }
     );
 
-    if (emailResponse.success) {
-      console.log('Email відправлено успішно');
-      res.status(200).json({ success: true });
+    if (response.status === 200 && response.data.success) {
+      console.log('✅ Transakcja zweryfikowana pomyślnie');
+      return response.data;
     } else {
-      console.error('Не вдалося надіслати email:', emailResponse.error);
-      res.status(500).json({ error: 'Не вдалося надіслати email' });
+      console.error('❌ Weryfikacja transakcji nie powiodła się:', response.data);
+      throw new Error('Weryfikacja transakcji nie powiodła się');
     }
-  } else {
-    // Якщо транзакція не була успішн
-    console.error('Платіж не був успішним');
-    res.status(400).json({ error: 'Платіж не був успішним' });
+  } catch (error) {
+    console.error('❌ Błąd weryfikacji:', error.message);
+    throw new Error('Weryfikacja transakcji nie powiodła się');
   }
-}
+};
