@@ -30,6 +30,9 @@ export default async function handler(req, res) {
       crc: CRC,
     };
 
+    console.log('checksumData', checksumData);
+    
+
     const stringToHash = JSON.stringify(checksumData, null, 0);
 
     const generatedCRC = crypto
@@ -47,6 +50,9 @@ export default async function handler(req, res) {
       sign: generatedCRC,
     };
 
+    console.log('transactionData', transactionData);
+    
+
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
     console.log('Authorization header:', authHeader);
 
@@ -61,6 +67,9 @@ export default async function handler(req, res) {
           },
         },
       );
+
+      console.log('verificationResponse', verificationResponse);
+      
 
       if (verificationResponse.status === 200) {
         console.log('✅ Transaction verified successfully');
