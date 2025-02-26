@@ -56,7 +56,9 @@ export default async function handler(req, res) {
         transactionData,
         {
           headers: {
-            Authorization: `Basic ${Buffer.from(`${334750}:${API_KEY}`).toString('base64')}`,
+            // Authorization: `Basic ${Buffer.from(`${334750}:${API_KEY}`).toString('base64')}`,
+            Authorization: `Basic ${BASE64_ENCODED("334750:7812c1120629c2a8d6f93fa1564e278d")}`
+            ,
             'Content-Type': 'application/json',
           },
         },
@@ -82,6 +84,7 @@ export default async function handler(req, res) {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
       }
     } catch (error) {
+      console.log('Przelewy24 error:', error.response?.data || error.message);
       res.status(500).json({ error: error.message });
     }
   } else {
