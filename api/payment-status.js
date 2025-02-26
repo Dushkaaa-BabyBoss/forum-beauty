@@ -21,9 +21,9 @@ export default async function handler(req, res) {
 
   const checksumData = {
     sessionId: sessionId,
-    merchantId: Number(MERCHANT_ID),
+    orderId: orderId,
     amount: amount,
-    currency: 'PLN',
+    currency: currency,
     crc: CRC,
   };
 
