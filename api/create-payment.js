@@ -40,14 +40,9 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: generateSign(334750, sessionId, cost, f78903438443d488), // Потрібно згенерувати правильний sign
+      sign: generateSign(334750, sessionId, cost, 'f78903438443d488'), // Потрібно згенерувати правильний sign
       orderKey: SECRET_ID,
     };
-
-    // console.log(
-    //   'Generated sign:',
-    //   generateSign(MERCHANT_ID, sessionId, amount, CRC),
-    // );
 
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
     console.log('Authorization header:', authHeader); // Перевірка заголовка

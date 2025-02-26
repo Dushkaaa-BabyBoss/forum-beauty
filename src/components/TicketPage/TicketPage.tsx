@@ -48,7 +48,7 @@ export const TicketPage: React.FC = () => {
         alert('Помилка створення платежу');
       }
     } catch (error) {
-      // console.error('Payment error:', error);
+      console.error('Payment error:', error);
       alert('Сталася помилка при створенні платежу. Спробуйте ще раз.');
     }
   };
