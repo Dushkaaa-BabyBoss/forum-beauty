@@ -24,11 +24,19 @@ export default async function handler(req, res) {
     const cost = amount * 100;
 
 
-    const stringToHash = `${sessionId}|${MERCHANT_ID}|${cost}|PLN|${CRC}`;
+    const checksumData = {
+      sessionId: sessionId,
+      merchantId: MERCHANT_ID,
+      amount: cost,
+      currency: 'PLN',
+      crc: CRC,
+    };
 
-// Додавання секретного ключа і обчислення SHA384 хешу
-    const hashString = `${stringToHash}${SECRET_ID}`;
-    const generatedCRC = crypto.createHash('sha384').update(hashString).digest('hex');
+    // Створюємо строку для хешування в потрібному форматі
+    const stringToHash = JSON.stringify(checksumData, null, 0);
+    
+    // Обчислюємо SHA384 хеш
+    const generatedCRC = crypto.createHash('sha384').update(stringToHash).digest('hex');
 
     console.log('sessionId:', sessionId);
     console.log('merchantId:', MERCHANT_ID);
