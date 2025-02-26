@@ -2,6 +2,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
     // const CRC = process.env.P24_CRC_KEY;
     // const SECRET_ID = process.env.P24_SECRET_ID;
     // const MERCHANT_ID = process.env.P24_MERCHANT_ID;
-  
+
     const API_KEY = process.env.P24_TEST_API_KEY;
     const CRC = process.env.P24_TEST_CRC_KEY;
     const SECRET_ID = process.env.P24_TEST_SECRET_ID;
@@ -53,7 +54,7 @@ export default async function handler(req, res) {
       country: 'PL',
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
-      urlStatus: 'https://www.beauty-revolution.pl/api/payment-status',
+      // urlStatus: 'https://www.beauty-revolution.pl/api/payment-status',
       sign: generatedCRC,
     };
 
@@ -87,6 +88,20 @@ export default async function handler(req, res) {
         res.json({
           paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
         });
+        const emailResponse = await sendEmail(
+          email,
+          name,
+          surname,
+          ticketType,
+          amount,
+          phone,
+        );
+
+        if (emailResponse.success) {
+          console.log('Email відправлено успішно');
+        } else {
+          console.error('Не вдалося надіслати email:', emailResponse.error);
+        }
         console.log(response.data.data.token);
       } else {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
