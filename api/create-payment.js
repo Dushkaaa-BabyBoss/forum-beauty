@@ -40,7 +40,7 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: generateSign(334750, sessionId, cost, 'f78903438443d488'), // Потрібно згенерувати правильний sign
+      sign: generateSign(334750, sessionId, cost, f78903438443d488), // Потрібно згенерувати правильний sign
       orderKey: SECRET_ID,
     };
 
