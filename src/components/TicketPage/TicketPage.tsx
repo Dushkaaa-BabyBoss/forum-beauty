@@ -222,7 +222,7 @@ export const TicketPage: React.FC = () => {
               </form>
 
               {email && name && surname && phone && (
-                <button onClick={handlePayment} >
+                <button onClick={handlePayment} className="button">
                   Оплатити через Przelew24
                 </button>
               )}
