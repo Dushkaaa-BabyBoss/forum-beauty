@@ -2,7 +2,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -54,7 +53,7 @@ export default async function handler(req, res) {
       country: 'PL',
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
-      // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
+      urlStatus: 'https://www.beauty-revolution.pl/payment-status',
       sign: generatedCRC,
     };
 
@@ -85,20 +84,6 @@ export default async function handler(req, res) {
         response.data.data &&
         response.data.data.token
       ) {
-        const emailResponse = await sendEmail(
-          email,
-          name,
-          surname,
-          ticketType,
-          amount,
-          phone,
-        );
-
-        if (emailResponse.success) {
-          console.log('Email успішно відправлено!');
-        } else {
-          console.error('Помилка при відправці email:', emailResponse.error);
-        }
         res.json({
           paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
         });
