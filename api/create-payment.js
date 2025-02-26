@@ -21,9 +21,10 @@ export default async function handler(req, res) {
     const sessionId = `session-${Date.now()}`;
 
     const API_KEY = process.env.P24_API_KEY;
-    const CRC = process.env.P24_CRC_KEY;
+    // const CRC = process.env.P24_CRC_KEY;
     const SECRET_ID = process.env.P24_SECRET_ID;
-    const MERCHANT_ID = process.env.P24_MERCHANT_ID || 334750;
+    const MERCHANT_ID = process.env.P24_MERCHANT_ID;
+    const CRC = '9b1521e65a03556b';
 
     const cost = amount * 100;
     console.log('Loaded CRC:', CRC);
