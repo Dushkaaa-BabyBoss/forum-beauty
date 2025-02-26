@@ -54,7 +54,7 @@ export default async function handler(req, res) {
       country: 'PL',
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
-      urlStatus: 'https://www.beauty-revolution.pl/api/example',
+      // urlStatus: 'https://www.beauty-revolution.pl/api/example',
       sign: generatedCRC,
     };
 
@@ -128,6 +128,7 @@ export default async function handler(req, res) {
 
       // 5. Повертаємо успішний результат з URL для платежу
       res.json({ paymentUrl });
+      ////////
     } catch (error) {
       console.log('Przelewy24 error:', error.response?.data || error.message);
       res.status(500).json({ error: error.message });
