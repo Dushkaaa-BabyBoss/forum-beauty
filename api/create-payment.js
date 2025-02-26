@@ -19,7 +19,6 @@ export default async function handler(req, res) {
 
     const cost = amount * 100;
     console.log('Loaded CRC:', CRC);
-    const sign = generateSign(MERCHANT_ID, sessionId, cost);
 
     console.log('Generated sign:', sign);
 
