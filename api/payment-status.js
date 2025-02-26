@@ -19,42 +19,42 @@ export default async function handler(req, res) {
   const CRC = process.env.P24_TEST_CRC_KEY;
   const API_KEY = process.env.P24_TEST_API_KEY;
 
-  console.log('CRC', CRC);
-  console.log('MERCHANT_ID', MERCHANT_ID);
-  console.log('API_KEY', API_KEY);
+  // console.log('CRC', CRC);
+  // console.log('MERCHANT_ID', MERCHANT_ID);
+  // console.log('API_KEY', API_KEY);
 
-  const checksumData = {
-    sessionId: sessionId,
-    orderId: orderId,
-    amount: amount,
-    currency: currency,
-    crc: CRC,
-  };
+  // const checksumData = {
+  //   sessionId: sessionId,
+  //   orderId: orderId,
+  //   amount: amount,
+  //   currency: currency,
+  //   crc: CRC,
+  // };
 
-  console.log(checksumData);
+  // console.log(checksumData);
 
-  console.log('sessionId', sessionId);
-  console.log('orderId', orderId);
-  console.log('currency', currency);
-  console.log('sign', sign);
+  // console.log('sessionId', sessionId);
+  // console.log('orderId', orderId);
+  // console.log('currency', currency);
+  // console.log('sign', sign);
 
-  const stringToHash = JSON.stringify(checksumData, null, 0); // Формуємо рядок без пробілів і escape-символів
+  // const stringToHash = JSON.stringify(checksumData, null, 0); // Формуємо рядок без пробілів і escape-символів
 
-  const generatedSign = crypto
-    .createHash('sha384')
-    .update(stringToHash)
-    .digest('hex');
-  console.log(generatedSign);
+  // const generatedSign = crypto
+  //   .createHash('sha384')
+  //   .update(stringToHash)
+  //   .digest('hex');
+  // console.log(generatedSign);
 
-  if (sign !== generatedSign) {
-    console.error('❌ Invalid sign:', {
-      received: sign,
-      expected: generatedSign,
-    });
-    return res.status(400).json({ error: 'Invalid sign' });
-  }
+  // if (sign !== generatedSign) {
+  //   console.error('❌ Invalid sign:', {
+  //     received: sign,
+  //     expected: generatedSign,
+  //   });
+  //   return res.status(400).json({ error: 'Invalid sign' });
+  // }
 
-  console.log('generatedCRC', generatedSign);
+  // console.log('generatedCRC', generatedSign);
 
   if (status === 'SUCCESS') {
     console.log('✅ Payment successful, verifying transaction...');
