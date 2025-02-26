@@ -16,10 +16,15 @@ export default async function handler(req, res) {
 
     const sessionId = `session-${Date.now()}`;
 
-    const API_KEY = process.env.P24_API_KEY;
-    const CRC = process.env.P24_CRC_KEY;
-    const SECRET_ID = process.env.P24_SECRET_ID;
-    const MERCHANT_ID = process.env.P24_MERCHANT_ID;
+    // const API_KEY = process.env.P24_API_KEY;
+    // const CRC = process.env.P24_CRC_KEY;
+    // const SECRET_ID = process.env.P24_SECRET_ID;
+    // const MERCHANT_ID = process.env.P24_MERCHANT_ID;
+
+    const API_KEY = '55245d0432bc285bf9a07635507d2733';
+    const CRC = '7c40ecc1423201d1';
+    const SECRET_ID = 'b81d7626';
+    const MERCHANT_ID = 334750;
 
     const cost = amount * 100;
 
