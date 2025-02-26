@@ -8,7 +8,7 @@ function generateSign(merchantId, sessionId, amount, crc) {
   if (!sessionId || !amount || !crc || !merchantId) {
     throw new Error('generateSign: відсутні необхідні параметри!');
   }
-  const stringToHash = `${sessionId} ${merchantId} ${amount} PLN ${crc}`;
+  const stringToHash = `${sessionId}/${merchantId}/${amount}/PLN/${crc}`;
   console.log('String to hash:', stringToHash);
   return crypto.createHash('sha384').update(stringToHash).digest('hex');
 }
