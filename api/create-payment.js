@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
 
-function generateSign(merchantId, sessionId, amount, crc) {
+function generateSign(merchantId, sessionId, amount, crc = '9b1521e65a03556b') {
   if (!sessionId || !amount || !crc || !merchantId) {
     throw new Error('generateSign: відсутні необхідні параметри!');
   }
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
     const cost = amount * 100;
     console.log('Loaded CRC:', CRC);
-    const sign = generateSign(MERCHANT_ID, sessionId, cost, CRC);
+    const sign = generateSign(MERCHANT_ID, sessionId, cost);
 
     console.log('Generated sign:', sign);
 
