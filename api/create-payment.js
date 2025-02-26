@@ -9,6 +9,7 @@ function generateSign(merchantId, sessionId, amount, crc) {
     throw new Error('generateSign: відсутні необхідні параметри!');
   }
   const stringToHash = `${sessionId}|${merchantId}|${amount}|PLN|${crc}`;
+  console.log('String to hash:', stringToHash);
   return crypto.createHash('sha384').update(stringToHash).digest('hex');
 }
 
@@ -27,6 +28,13 @@ export default async function handler(req, res) {
     const cost = amount * 100;
     console.log('Loaded CRC:', CRC);
     const sign = generateSign(MERCHANT_ID, sessionId, cost, CRC);
+
+    console.log('Generated sign:', sign);
+
+    console.log('sessionId:', sessionId);
+    console.log('merchantId:', MERCHANT_ID);
+    console.log('amount:', amount);
+    console.log('crc:', CRC);
 
     const transactionData = {
       merchantId: MERCHANT_ID,
