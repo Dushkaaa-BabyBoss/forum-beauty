@@ -4,15 +4,6 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
 
-function generateSign(merchantId, sessionId, amount, crc = '9b1521e65a03556b') {
-  if (!sessionId || !amount || !crc || !merchantId) {
-    throw new Error('generateSign: відсутні необхідні параметри!');
-  }
-  const stringToHash = `${sessionId}/${merchantId}/${amount}/PLN/${crc}`;
-  console.log('String to hash:', stringToHash);
-  return crypto.createHash('sha384').update(stringToHash).digest('hex');
-}
-
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     console.log('Received request:', req.body);
@@ -37,6 +28,12 @@ export default async function handler(req, res) {
     console.log('amount:', amount);
     console.log('crc:', CRC);
 
+    const stringToHash = `${sessionId}|${MERCHANT_ID}|${cost}|PLN|${CRC}`;
+
+// Додавання секретного ключа і обчислення SHA384 хешу
+    const hashString = `${stringToHash}${SECRET_ID}`;
+    const generatedCRC = crypto.createHash('sha384').update(hashString).digest('hex');
+
     const transactionData = {
       merchantId: MERCHANT_ID,
       posId: MERCHANT_ID, // POS ID = MERCHANT_ID
@@ -49,7 +46,7 @@ export default async function handler(req, res) {
       language: 'pl',
       urlReturn: 'https://www.beauty-revolution.pl/',
       // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-      sign: sign,
+      sign: generatedCRC,
     };
 
     const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
