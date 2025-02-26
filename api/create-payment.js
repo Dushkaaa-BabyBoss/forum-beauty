@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
     const checksumData = {
       sessionId: sessionId,
-      merchantId: MERCHANT_ID,
+      merchantId: Number(MERCHANT_ID),
       amount: cost,
       currency: 'PLN',
       crc: CRC,
@@ -45,7 +45,6 @@ export default async function handler(req, res) {
     console.log('crc:', CRC);
     console.log('secretId:', SECRET_ID);
     console.log('stringToHash:', stringToHash);
-    console.log('hashString:', hashString);
     console.log('generatedCRC:', generatedCRC);
 
     const transactionData = {
