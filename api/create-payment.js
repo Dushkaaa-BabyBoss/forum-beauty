@@ -84,8 +84,11 @@ export default async function handler(req, res) {
       if (
         response.status === 200 &&
         response.data.data &&
-        response.data.data.token
+        response.data.data.token &&
+        response.data.data.orderId
       ) {
+        const orderId = response.data.data.orderId; // Отримуємо orderId
+        console.log('Order ID:', orderId); // Логування для перевірки
         // res.json({
         //   paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
         // });
@@ -147,7 +150,7 @@ export default async function handler(req, res) {
 
       // 5. Повертаємо успішний результат з URL для платежу
       res.json({ paymentUrl });
-      //////// end 
+      //////// end
     } catch (error) {
       console.log('Przelewy24 error:', error.response?.data || error.message);
       res.status(500).json({ error: error.message });
@@ -156,4 +159,3 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
-
