@@ -2,6 +2,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { sendEmail } from './sendEmail';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     console.log('Received request:', req.body);
-    const { email, name, surname, phone, amount } = req.body;
+    const { email, name, surname, phone, amount, ticketType } = req.body;
 
     const sessionId = `session-${Date.now()}`;
 
@@ -19,10 +20,8 @@ export default async function handler(req, res) {
     const CRC = process.env.P24_CRC_KEY;
     const SECRET_ID = process.env.P24_SECRET_ID;
     const MERCHANT_ID = process.env.P24_MERCHANT_ID;
-    // const CRC = '9b1521e65a03556b';
 
     const cost = amount * 100;
-
 
     const checksumData = {
       sessionId: sessionId,
@@ -32,24 +31,16 @@ export default async function handler(req, res) {
       crc: CRC,
     };
 
-    // Створюємо строку для хешування в потрібному форматі
     const stringToHash = JSON.stringify(checksumData, null, 0);
-    
-    // Обчислюємо SHA384 хеш
-    const generatedCRC = crypto.createHash('sha384').update(stringToHash).digest('hex');
 
-    console.log('sessionId:', sessionId);
-    console.log('merchantId:', MERCHANT_ID);
-    console.log('cost:', cost);
-    console.log('currency:', 'PLN');
-    console.log('crc:', CRC);
-    console.log('secretId:', SECRET_ID);
-    console.log('stringToHash:', stringToHash);
-    console.log('generatedCRC:', generatedCRC);
+    const generatedCRC = crypto
+      .createHash('sha384')
+      .update(stringToHash)
+      .digest('hex');
 
     const transactionData = {
       merchantId: MERCHANT_ID,
-      posId: MERCHANT_ID, // POS ID = MERCHANT_ID
+      posId: MERCHANT_ID,
       sessionId: sessionId,
       amount: cost,
       currency: 'PLN',
@@ -67,7 +58,7 @@ export default async function handler(req, res) {
 
     try {
       const response = await axios.post(
-        'https://secure.przelewy24.pl/api/v1/transaction/register',
+        'https://sandbox.przelewy24.pl/api/v1/transaction/register',
         transactionData,
         {
           headers: {
@@ -89,8 +80,22 @@ export default async function handler(req, res) {
         response.data.data &&
         response.data.data.token
       ) {
+        const emailResponse = await sendEmail(
+          email,
+          name,
+          surname,
+          ticketType,
+          amount,
+          phone,
+        );
+
+        if (emailResponse.success) {
+          console.log('Email успішно відправлено!');
+        } else {
+          console.error('Помилка при відправці email:', emailResponse.error);
+        }
         res.json({
-          paymentUrl: `https://secure.przelewy24.pl/trnRequest/${response.data.data.token}`,
+          paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
         });
         console.log(response.data.data.token);
       } else {

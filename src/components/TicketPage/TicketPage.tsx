@@ -4,8 +4,6 @@ import { useState } from 'react';
 import '../TicketPage/TicketPage.scss';
 
 enum Price {
-  // standart = 5,
-  // vip = 5,
   standart = 649,
   vip = 949,
 }
@@ -39,11 +37,11 @@ export const TicketPage: React.FC = () => {
         }),
       });
 
-      const data = await response.json(); // Якщо ви хочете працювати з JSON
+      const data = await response.json();
       console.log('Payment response:', data);
 
       if (data.paymentUrl) {
-        window.location.href = data.paymentUrl; // Перенаправлення на платіж
+        window.location.href = data.paymentUrl;
       } else {
         alert('Помилка створення платежу');
       }
@@ -224,7 +222,7 @@ export const TicketPage: React.FC = () => {
               </form>
 
               {email && name && surname && phone && (
-                <button onClick={handlePayment}>
+                <button onClick={handlePayment} >
                   Оплатити через Przelew24
                 </button>
               )}
