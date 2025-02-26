@@ -20,8 +20,6 @@ export default async function handler(req, res) {
     const cost = amount * 100;
     console.log('Loaded CRC:', CRC);
 
-    console.log('Generated sign:', sign);
-
     console.log('sessionId:', sessionId);
     console.log('merchantId:', MERCHANT_ID);
     console.log('amount:', amount);
