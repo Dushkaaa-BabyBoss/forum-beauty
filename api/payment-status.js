@@ -2,7 +2,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { parse } from 'cookie';
-import { sendEmail } from './emailService';
+// import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -14,12 +14,19 @@ export default async function handler(req, res) {
   const paymentData = cookies.paymentData ? JSON.parse(paymentData) : null;
 
   if (!paymentData) {
-    return res.status(400).json({ error: 'Платіжні дані не знайдені в сесії' });
+    return res.status(400).json({ error: 'Платіжні дані не знайдені в кукі' });
   }
 
   const { email, name, surname, phone, ticketType } = paymentData;
 
-  console.log('Received status update:', req.body);
+  console.log(
+    'Received additional parameters:',
+    email,
+    name,
+    surname,
+    phone,
+    ticketType,
+  );
 
   const { sessionId, orderId, amount, currency } = req.body;
 
