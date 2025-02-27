@@ -77,9 +77,17 @@ export default async function handler(req, res) {
     console.log('response.data.status', response.data.status);
 
     console.log('response.data.data.status', response.data.data.status);
+
+    console.log('email', email);
+    console.log('name', name);
+    console.log('surname', surname);
+    console.log('ticketType', ticketType);
+    console.log('amount', amount);
+    console.log('phone', phone);
+    
     
     if (response.data.data.status === 'success') {
-      const emailResponse = await sendEmail(email, name, surname, ticketType, amount, phone);
+      // const emailResponse = await sendEmail(email, name, surname, ticketType, amount, phone);
       res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
     } else {
       res.status(500).json({ error: 'Верифікація не пройшла' });

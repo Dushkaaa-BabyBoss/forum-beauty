@@ -34,6 +34,7 @@ export const TicketPage: React.FC = () => {
           surname,
           phone,
           amount: ticketPrice,
+          ticketType,
         }),
       });
 
@@ -45,6 +46,21 @@ export const TicketPage: React.FC = () => {
       } else {
         alert('Помилка створення платежу');
       }
+      // Якщо платіж успішний, відправляємо email
+    const emailResponse = await fetch('/api/emailSender', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        name,
+        surname,
+        ticketType,
+        phone,
+        ticketPrice,
+      }),
+    });
     } catch (error) {
       console.error('Payment error:', error);
       alert('Сталася помилка при створенні платежу. Спробуйте ще раз.');
