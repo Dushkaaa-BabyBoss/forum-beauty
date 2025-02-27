@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -10,7 +11,7 @@ export default async function handler(req, res) {
 
   console.log('Received status update:', req.body);
 
-  const { sessionId, orderId, amount, currency } = req.body;
+  const { sessionId, orderId, amount, currency, email, name, surname, phone, ticketType } = req.body;
 
   const API_KEY = process.env.P24_TEST_API_KEY;
   const CRC = process.env.P24_TEST_CRC_KEY;
@@ -77,7 +78,8 @@ export default async function handler(req, res) {
 
     console.log('response.data.data.status', response.data.data.status);
     
-    if (response.status === 200) {
+    if (response.data.data.status === 'success') {
+      const emailResponse = await sendEmail(email, name, surname, ticketType, amount, phone);
       res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
     } else {
       res.status(500).json({ error: 'Верифікація не пройшла' });
