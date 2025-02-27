@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { parse } from 'cookie';
 import { sendEmail } from './emailService';
 dotenv.config();
 
@@ -9,22 +10,43 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  const cookies = req.headers.cookie ? parse(req.headers.cookie) : {};
+  const paymentData = cookies.paymentData ? JSON.parse(paymentData) : null;
+
+  if (!paymentData) {
+    return res.status(400).json({ error: 'Платіжні дані не знайдені в сесії' });
+  }
+
+  const { email, name, surname, phone, ticketType } = paymentData;
+
   console.log('Received status update:', req.body);
 
-  const { sessionId, orderId, amount, currency, email, name, surname, phone, ticketType } = req.body;
+  const { sessionId, orderId, amount, currency } = req.body;
+
+  console.log('Received status update-1:', req.body);
+  console.log(
+    'Received additional parameters:',
+    email,
+    name,
+    surname,
+    phone,
+    ticketType,
+  );
 
   const API_KEY = process.env.P24_TEST_API_KEY;
   const CRC = process.env.P24_TEST_CRC_KEY;
   const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
 
-  // const cost = amount * 100;
+  // const API_KEY = process.env.P24_API_KEY;
+  // const CRC = process.env.P24_CRC_KEY;
+  // const SECRET_ID = process.env.P24_SECRET_ID;
+  // const MERCHANT_ID = process.env.P24_MERCHANT_ID;
 
   console.log('orderId', orderId);
   console.log('amount', amount);
   console.log('sessionId', sessionId);
   console.log('currency', currency);
 
-  // Формуємо checksum для верифікації
   const checksumData = {
     sessionId: sessionId,
     orderId: Number(orderId),
@@ -41,9 +63,9 @@ export default async function handler(req, res) {
     .createHash('sha384')
     .update(stringToHash)
     .digest('hex');
-  
+
   console.log('generatedCRC', generatedCRC);
-  
+
   const verificationData = {
     merchantId: Number(MERCHANT_ID),
     posId: Number(MERCHANT_ID),
@@ -55,7 +77,7 @@ export default async function handler(req, res) {
   };
 
   console.log('verificationData', verificationData);
-  
+
   const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
 
   try {
@@ -67,27 +89,26 @@ export default async function handler(req, res) {
           Authorization: authHeader,
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
 
     console.log('Verification response:', response.data);
 
-    console.log('response.status',response.status);
-    
+    console.log('response.status', response.status);
+
     console.log('response.data.status', response.data.status);
 
     console.log('response.data.data.status', response.data.data.status);
 
-    console.log('email', email);
-    console.log('name', name);
-    console.log('surname', surname);
-    console.log('ticketType', ticketType);
-    console.log('amount', amount);
-    console.log('phone', phone);
-    
-    
     if (response.data.data.status === 'success') {
-      // const emailResponse = await sendEmail(email, name, surname, ticketType, amount, phone);
+      const emailResponse = await sendEmail(
+        email,
+        name,
+        surname,
+        ticketType,
+        amount,
+        phone,
+      );
       res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
     } else {
       res.status(500).json({ error: 'Верифікація не пройшла' });

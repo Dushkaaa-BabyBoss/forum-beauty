@@ -20,7 +20,7 @@ export const TicketPage: React.FC = () => {
     setTicketType(type);
     setShowForm(true);
   };
-
+  
   const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
 
   const handlePayment = async () => {
@@ -46,21 +46,6 @@ export const TicketPage: React.FC = () => {
       } else {
         alert('Помилка створення платежу');
       }
-    //   // Якщо платіж успішний, відправляємо email
-    // const emailResponse = await fetch('/api/emailSender', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     email,
-    //     name,
-    //     surname,
-    //     ticketType,
-    //     phone,
-    //     ticketPrice,
-    //   }),
-    // });
     } catch (error) {
       console.error('Payment error:', error);
       alert('Сталася помилка при створенні платежу. Спробуйте ще раз.');
