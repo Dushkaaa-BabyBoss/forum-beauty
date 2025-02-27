@@ -31,14 +31,14 @@ export default async function handler(req, res) {
   const { sessionId, orderId, amount, currency } = req.body;
 
   console.log('Received status update-1:', req.body);
-  console.log(
-    'Received additional parameters:',
-    email,
-    name,
-    surname,
-    phone,
-    ticketType,
-  );
+  // console.log(
+  //   'Received additional parameters:',
+  //   email,
+  //   name,
+  //   surname,
+  //   phone,
+  //   ticketType,
+  // );
 
   const API_KEY = process.env.P24_TEST_API_KEY;
   const CRC = process.env.P24_TEST_CRC_KEY;
