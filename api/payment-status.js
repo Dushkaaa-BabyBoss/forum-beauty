@@ -3,43 +3,63 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
-const API_KEY = process.env.P24_TEST_API_KEY;
-const CRC = process.env.P24_TEST_CRC_KEY;
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-// Базова авторизація для API
-const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
+  console.log('Received status update:', req.body);
 
-// Функція для генерації контрольної суми
-const generateCRC = (sessionId, orderId, amount, currency, crcKey) => {
-  const data = {
+  const { sessionId, orderId, amount, currency } = req.body;
+
+  const API_KEY = process.env.P24_TEST_API_KEY;
+  const CRC = process.env.P24_TEST_CRC_KEY;
+  const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
+
+  // const cost = amount * 100;
+
+  console.log('orderId', orderId);
+  console.log('amount', amount);
+  console.log('sessionId', sessionId);
+  console.log('currency', currency);
+
+  // Формуємо checksum для верифікації
+  const checksumData = {
     sessionId: sessionId,
-    orderId: orderId,
+    orderId: Number(orderId),
     amount: amount,
     currency: currency,
-    crc: crcKey,
+    crc: CRC,
   };
 
-  const stringToHash = JSON.stringify(data, null, 0);
-  return crypto.createHash('sha384').update(stringToHash).digest('hex');
-};
+  console.log('checksumData', checksumData);
 
-// Функція для верифікації транзакції
-export const verifyTransaction = async (sessionId, orderId, amount) => {
+  const stringToHash = JSON.stringify(checksumData, null, 0);
+
+  const generatedCRC = crypto
+    .createHash('sha384')
+    .update(stringToHash)
+    .digest('hex');
+  
+  console.log('generatedCRC', generatedCRC);
+  
   const verificationData = {
-    merchantId: MERCHANT_ID,
-    posId: MERCHANT_ID,
+    merchantId: Number(MERCHANT_ID),
+    posId: Number(MERCHANT_ID),
     sessionId: sessionId,
-    amount: amount,
-    currency: 'PLN',  // Валюта, за замовчуванням PLN
-    orderId: orderId,
-    sign: generateCRC(sessionId, orderId, amount, 'PLN', CRC),  // Генерація контрольної суми
+    amount: Number(amount),
+    currency: currency,
+    orderId: Number(orderId),
+    sign: generatedCRC,
   };
 
-  console.log('Verification data:', verificationData);
+  console.log('verificationData', verificationData);
+  
+  const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
+
   try {
     const response = await axios.put(
-      'https://sandbox.przelewy24.pl/api/v1/transaction/verify', // Використовуємо URL для верифікації
+      'https://sandbox.przelewy24.pl/api/v1/transaction/verify',
       verificationData,
       {
         headers: {
@@ -49,18 +69,19 @@ export const verifyTransaction = async (sessionId, orderId, amount) => {
       }
     );
 
-    console.log('orderId', verificationData.orderId);
-    
+    console.log('Verification response:', response.data);
 
-    if (response.status === 200 && response.data.success) {
-      console.log('✅ Transakcja zweryfikowana pomyślnie');
-      return response.data;
+    console.log('response.status',response.status);
+    
+    console.log('response.data.status', response.data.status);
+    
+    if (response.status === 200) {
+      res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
     } else {
-      console.error('❌ Weryfikacja transakcji nie powiodła się:', response.data);
-      throw new Error('Weryfikacja transakcji nie powiodła się');
+      res.status(500).json({ error: 'Верифікація не пройшла' });
     }
   } catch (error) {
-    console.error('❌ Błąd weryfikacji:', error.message);
-    throw new Error('Weryfikacja transakcji nie powiodła się');
+    console.error('Verification error:', error.response?.data || error.message);
+    res.status(500).json({ error: error.message });
   }
-};
+}

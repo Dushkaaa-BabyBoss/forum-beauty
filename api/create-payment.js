@@ -2,8 +2,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { sendEmail } from './emailService';
-import { verifyTransaction } from './payment-status';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -50,7 +48,7 @@ export default async function handler(req, res) {
       sessionId: sessionId,
       amount: cost,
       currency: 'PLN',
-      description: `Оплата квитка`,
+      description: `Opłata biletu`,
       email,
       country: 'PL',
       language: 'pl',
@@ -84,73 +82,16 @@ export default async function handler(req, res) {
       if (
         response.status === 200 &&
         response.data.data &&
-        response.data.data.token &&
-        response.data.data.orderId
+        response.data.data.token
       ) {
-        const orderId = response.data.data.orderId; // Отримуємо orderId
-        console.log('Order ID:', orderId); // Логування для перевірки
-        // res.json({
-        //   paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
-        // });
-        /////////////////////////////////////////////////////////////////////////////////////////////
-        const paymentUrl = `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`;
-        console.log('Payment URL:', paymentUrl);
+        res.json({
+          paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
+        });
 
-        const verificationResponse = await verifyTransaction(
-          sessionId,
-          response.data.data.orderId, // Використовуємо orderId з відповіді
-          cost,
-        );
-
-        // Перевіряємо, чи успішно підтверджена транзакція
-        if (verificationResponse.success) {
-          console.log('✅ Transaction verified successfully');
-          res.json({ paymentUrl });
-        } else {
-          console.error('❌ Transaction verification failed');
-          res.status(400).json({ error: 'Transaction verification failed' });
-        }
         console.log(response.data.data.token);
       } else {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
       }
-      //////////// Verify payment
-      const transactionVerificationData = {
-        merchantId: MERCHANT_ID,
-        posId: MERCHANT_ID,
-        sessionId: sessionId,
-        amount: cost,
-        currency: 'PLN',
-        orderId: response.data.data.orderId, // Використовуємо orderId з відповіді
-        sign: generatedCRC,
-      };
-
-      const verificationResponse = await axios.put(
-        'https://sandbox.przelewy24.pl/api/v1/transaction/verify',
-        transactionVerificationData,
-        {
-          headers: {
-            Authorization: authHeader,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (verificationResponse.status === 200) {
-        console.log('✅ Transaction verified successfully');
-      } else {
-        console.error(
-          '❌ Transaction verification failed:',
-          verificationResponse.data,
-        );
-        return res
-          .status(400)
-          .json({ error: 'Transaction verification failed' });
-      }
-
-      // 5. Повертаємо успішний результат з URL для платежу
-      res.json({ paymentUrl });
-      //////// end
     } catch (error) {
       console.log('Przelewy24 error:', error.response?.data || error.message);
       res.status(500).json({ error: error.message });
