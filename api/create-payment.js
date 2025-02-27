@@ -92,13 +92,27 @@ export default async function handler(req, res) {
 
         console.log(response.data.data.token);
 
-        await sendEmail(email, name, surname, ticketType, amount, phone);
+        // await sendEmail(email, name, surname, ticketType, amount, phone);
       } else {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
       }
     } catch (error) {
       console.log('Przelewy24 error:', error.response?.data || error.message);
       res.status(500).json({ error: error.message });
+    } finally {
+      try {
+        // Спробуємо відправити email
+        await sendEmail(email, name, surname, ticketType, amount, phone);
+        console.log('Email sent successfully');
+      } catch (emailError) {
+        // Ловимо помилку при відправці email
+        console.error('Error sending email:', emailError.message);
+        // Відправимо повідомлення про помилку, але не зупиняємо процес транзакції
+        res.status(500).json({
+          error:
+            'Транзакція успішна, але не вдалося надіслати підтвердження на email',
+        });
+      }
     }
   } else {
     res.status(405).json({ error: 'Method Not Allowed' });
