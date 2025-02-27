@@ -2,7 +2,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-// import { serialize } from 'cookie';
+import { serialize } from 'cookie';
 dotenv.config();
 
 export default async function handler(req, res) {
