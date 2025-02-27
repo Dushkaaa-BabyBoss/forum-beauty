@@ -2,7 +2,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { serialize } from 'cookie';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -13,21 +12,6 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     console.log('Received request:', req.body);
     const { email, name, surname, phone, amount, ticketType } = req.body;
-
-    // // Add to cookie data
-    // Збереження даних у кукі
-    const paymentData = { email, name, surname, phone, ticketType };
-
-    const cookieString = serialize('paymentData', JSON.stringify(paymentData), {
-      httpOnly: true, // Для безпеки
-      secure: process.env.NODE_ENV === 'production', // Тільки для HTTPS в продакшн
-      sameSite: 'Strict', // Для безпеки
-      maxAge: 60 * 60 * 24, // Час життя кукі: 24 години
-      path: '/',
-    });
-
-    res.setHeader('Set-Cookie', cookieString);
-    //////////
 
     const sessionId = `session-${Date.now()}`;
 
