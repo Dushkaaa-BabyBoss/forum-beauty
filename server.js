@@ -1,86 +1,128 @@
-import cors from 'cors';
-import axios from 'axios';
 import express from 'express';
+import axios from 'axios';
+import crypto from 'crypto';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
 
-import crypto from 'crypto';
+const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
+const API_KEY = process.env.P24_TEST_API_KEY;
+const CRC = process.env.P24_TEST_CRC_KEY;
 
-function generateSign(sessionId, amount, crc) {
-  if (!sessionId || !amount || !crc) {
-    throw new Error('generateSign: відсутні необхідні параметри!');
-  }
-  const stringToHash = `${MERCHANT_ID}|${sessionId}|${amount}|PLN|${crc}`;
+// Базова авторизація для API
+const authHeader = `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`;
+
+// Генерація контрольної суми
+const generateCRC = (sessionId, orderId, amount, currency, crcKey) => {
+  const data = {
+    sessionId: sessionId,
+    orderId: orderId,
+    amount: amount,
+    currency: currency,
+    crc: crcKey,
+  };
+  const stringToHash = JSON.stringify(data, null, 0);
   return crypto.createHash('sha384').update(stringToHash).digest('hex');
-}
+};
 
-const MERCHANT_ID = 334750;
-const API_KEY = '7812c1120629c2a8d6f93fa1564e278d';
-const CRC = 'f78903438443d488';
-
-app.post('/create-payment', async (req, res) => {
-  console.log('Received request:', req.body);
-  const { email, name, surname, phone, amount } = req.body;
-
+// Ендпоінт для реєстрації транзакції
+app.post('/api/create-payment', async (req, res) => {
+  const { email, amount } = req.body;
   const sessionId = `session-${Date.now()}`;
+  const cost = amount * 100; // Преобразовуємо в копійки
+
+  const checksumData = {
+    sessionId: sessionId,
+    merchantId: Number(MERCHANT_ID),
+    amount: cost,
+    currency: 'PLN',
+    crc: CRC,
+  };
+
+  const stringToHash = JSON.stringify(checksumData, null, 0);
+  const generatedCRC = crypto.createHash('sha384').update(stringToHash).digest('hex');
 
   const transactionData = {
     merchantId: MERCHANT_ID,
-    posId: MERCHANT_ID, // POS ID = MERCHANT_ID
-    sessionId,
-    amount: amount * 100, // Przelewy24 вимагає суми у грошових одиницях
+    posId: MERCHANT_ID,
+    sessionId: sessionId,
+    amount: cost,
     currency: 'PLN',
     description: `Оплата квитка`,
     email,
     country: 'PL',
     language: 'pl',
-    urlReturn: 'http://localhost:3000/payment-success',
-    urlStatus: 'http://localhost:5000/payment-status',
-    // urlStatus: 'https://www.beauty-revolution.pl/payment-status',
-    sign: generateSign(sessionId, amount, CRC), // Потрібно згенерувати правильний sign
+    urlReturn: 'https://localhost:3000/return', // Замість реальної URL-адреси
+    urlStatus: 'https://localhost:3000/api/payment-status',
+    sign: generatedCRC,
   };
-  console.log('Generated sign:', generateSign(sessionId, amount, CRC)); // Лог сгенерованого підпису
-  console.log('Transaction Data:', transactionData); // Лог транзакційних даних
 
   try {
     const response = await axios.post(
-      'https://secure.przelewy24.pl/api/v1/transaction/register',
+      'https://sandbox.przelewy24.pl/api/v1/transaction/register',
       transactionData,
       {
         headers: {
-          Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString('base64')}`,
-          // Authorization: `Basic ${Buffer.from(`${MERCHANT_ID}:${MERCHANT_ID}`).toString('base64')}`,
-
+          Authorization: authHeader,
           'Content-Type': 'application/json',
         },
-      },
+      }
     );
 
-    console.log('Przelew24 Response:', response); // Лог відповіді від сервера
-
-    if (response.data.error) {
-      console.error('Przelewy24 error:', response.data.error);
-    }
-
-    if (
-      response.status === 200 &&
-      response.data.data &&
-      response.data.data.token
-    ) {
+    if (response.data.data && response.data.data.token) {
       res.json({
-        paymentUrl: `https://secure.przelewy24.pl/trnRequest/${response.data.data.token}`,
+        paymentUrl: `https://sandbox.przelewy24.pl/trnRequest/${response.data.data.token}`,
       });
     } else {
       res.status(500).json({ error: 'Не вдалося створити платіж' });
     }
   } catch (error) {
-    console.error('Request failed with error:', error.message);
-    res.status(500).json({ error: error.message });
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'Не вдалося зареєструвати транзакцію' });
   }
 });
 
-app.listen(5000, () => {
-  console.log('Server is running on port 5000');
+// Ендпоінт для перевірки статусу платежу
+app.post('/api/payment-status', async (req, res) => {
+  const { sessionId, orderId, amount } = req.body;
+
+  const verificationData = {
+    merchantId: MERCHANT_ID,
+    posId: MERCHANT_ID,
+    sessionId: sessionId,
+    amount: amount,
+    currency: 'PLN',
+    orderId: orderId,
+    sign: generateCRC(sessionId, orderId, amount, 'PLN', CRC),
+  };
+
+  try {
+    const response = await axios.put(
+      'https://sandbox.przelewy24.pl/api/v1/transaction/verify',
+      verificationData,
+      {
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response.status === 200 && response.data.success) {
+      console.log('✅ Transakcja zweryfikowana pomyślnie');
+      res.json({ status: 'Transaction verified' });
+    } else {
+      res.status(400).json({ error: 'Verification failed' });
+    }
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'Verification failed' });
+  }
+});
+
+app.listen(3001, () => {
+  console.log('Server running on http://localhost:3000');
 });
