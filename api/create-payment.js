@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       sessionId: sessionId,
       amount: cost,
       currency: 'PLN',
-      description: `Opłata biletu - ${ticketType}`,
+      description: `Oplata biletu - ${ticketType}`,
       email,
       client: `${name} ${surname}`,
       country: 'PL',
