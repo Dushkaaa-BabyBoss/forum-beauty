@@ -2,7 +2,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -14,7 +13,8 @@ export default async function handler(req, res) {
     console.log('Received request:', req.body);
     const { email, name, surname, phone, amount, ticketType } = req.body;
 
-    const sessionId = `session-${Date.now()}`;
+    // const sessionId = `session-${Date.now()}`;
+    const sessionId = `session-${name}-${surname}-${email}-${phone}-${ticketType}-${Date.now()}`;
 
     // const API_KEY = process.env.P24_API_KEY;
     // const CRC = process.env.P24_CRC_KEY;
@@ -99,20 +99,6 @@ export default async function handler(req, res) {
     } catch (error) {
       console.log('Przelewy24 error:', error.response?.data || error.message);
       res.status(500).json({ error: error.message });
-    } finally {
-      try {
-        // Спробуємо відправити email
-        await sendEmail(email, name, surname, ticketType, amount, phone);
-        console.log('Email sent successfully');
-      } catch (emailError) {
-        // Ловимо помилку при відправці email
-        console.error('Error sending email:', emailError.message);
-        // Відправимо повідомлення про помилку, але не зупиняємо процес транзакції
-        res.status(500).json({
-          error:
-            'Транзакція успішна, але не вдалося надіслати підтвердження на email',
-        });
-      }
     }
   } else {
     res.status(405).json({ error: 'Method Not Allowed' });

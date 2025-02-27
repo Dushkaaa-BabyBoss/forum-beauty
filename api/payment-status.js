@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -80,6 +81,17 @@ export default async function handler(req, res) {
     console.log('response.data.data.status', response.data.data.status);
 
     if (response.data.data.status === 'success') {
+      const [prefix, name, surname, email, phone, ticketType, timestamp] = sessionId.split('-');
+      try {
+        // Використовуємо отриману інформацію для відправки email
+        await sendEmail(email, name, surname, ticketType, amount, phone);
+        res.status(200).json({ message: 'Payment successful and email sent' });
+      } catch (emailError) {
+        console.error('Error sending email:', emailError.message);
+        res.status(500).json({
+          error: 'Payment was successful, but failed to send confirmation email.',
+        });
+      }
       res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
     } else {
       res.status(500).json({ error: 'Верифікація не пройшла' });
