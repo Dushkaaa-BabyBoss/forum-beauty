@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { parse } from 'cookie';
 import { sendEmail } from './emailService';
 dotenv.config();
 
@@ -9,14 +10,28 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  const cookies = req.headers.cookie ? parse(req.headers.cookie) : {};
+  const paymentData = cookies.paymentData ? JSON.parse(paymentData) : null;
+
+  if (!paymentData) {
+    return res.status(400).json({ error: 'Платіжні дані не знайдені в сесії' });
+  }
+
+  const { email, name, surname, phone, ticketType } = paymentData;
+
   console.log('Received status update:', req.body);
 
   const { sessionId, orderId, amount, currency } = req.body;
 
-  const { email, name, surname, phone, ticketType } = req.query;
-
   console.log('Received status update-1:', req.body);
-  console.log('Received additional parameters:', email, name, surname, phone, ticketType);
+  console.log(
+    'Received additional parameters:',
+    email,
+    name,
+    surname,
+    phone,
+    ticketType,
+  );
 
   const API_KEY = process.env.P24_TEST_API_KEY;
   const CRC = process.env.P24_TEST_CRC_KEY;
@@ -86,7 +101,14 @@ export default async function handler(req, res) {
     console.log('response.data.data.status', response.data.data.status);
 
     if (response.data.data.status === 'success') {
-      const emailResponse = await sendEmail(email, name, surname, ticketType, amount, phone);
+      const emailResponse = await sendEmail(
+        email,
+        name,
+        surname,
+        ticketType,
+        amount,
+        phone,
+      );
       res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
     } else {
       res.status(500).json({ error: 'Верифікація не пройшла' });
