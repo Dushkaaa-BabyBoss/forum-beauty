@@ -23,16 +23,6 @@ export const TicketPage: React.FC = () => {
   
   const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
 
-  const paymentData = {
-    email,
-    name,
-    surname,
-    phone,
-    ticketType
-  };
-
-  localStorage.setItem('paymentData', JSON.stringify(paymentData));
-
   const handlePayment = async () => {
     try {
       const response = await fetch('api/create-payment', {
