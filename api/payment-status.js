@@ -13,14 +13,14 @@ export default async function handler(req, res) {
 
   console.log('Received status update-1:', req.body);
 
-  const API_KEY = process.env.P24_TEST_API_KEY;
-  const CRC = process.env.P24_TEST_CRC_KEY;
-  const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
+  // const API_KEY = process.env.P24_TEST_API_KEY;
+  // const CRC = process.env.P24_TEST_CRC_KEY;
+  // const MERCHANT_ID = process.env.P24_TEST_MERCHANT_ID;
 
-  // const API_KEY = process.env.P24_API_KEY;
-  // const CRC = process.env.P24_CRC_KEY;
-  // const SECRET_ID = process.env.P24_SECRET_ID;
-  // const MERCHANT_ID = process.env.P24_MERCHANT_ID;
+  const API_KEY = process.env.P24_API_KEY;
+  const CRC = process.env.P24_CRC_KEY;
+  const SECRET_ID = process.env.P24_SECRET_ID;
+  const MERCHANT_ID = process.env.P24_MERCHANT_ID;
 
   console.log('orderId', orderId);
   console.log('amount', amount);
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.put(
-      'https://sandbox.przelewy24.pl/api/v1/transaction/verify',
+      'https://secure.przelewy24.pl/api/v1/transaction/verify',
       verificationData,
       {
         headers: {
