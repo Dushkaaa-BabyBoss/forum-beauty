@@ -74,6 +74,8 @@ export default async function handler(req, res) {
     console.log('response.status',response.status);
     
     console.log('response.data.status', response.data.status);
+
+    console.log('response.data.data.status', response.data.data.status);
     
     if (response.status === 200) {
       res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
