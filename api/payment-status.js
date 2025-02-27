@@ -84,7 +84,7 @@ export default async function handler(req, res) {
       const [prefix, name, surname, email, phone, ticketType, timestamp] = sessionId.split('-');
       try {
         // Використовуємо отриману інформацію для відправки email
-        await sendEmail(email, name, surname, ticketType, amount, phone);
+        await sendEmail(email, name, surname, ticketType, amount / 100, phone);
         res.status(200).json({ message: 'Payment successful and email sent' });
       } catch (emailError) {
         console.error('Error sending email:', emailError.message);
