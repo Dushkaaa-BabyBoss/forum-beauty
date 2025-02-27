@@ -2,16 +2,8 @@
 
 import { useState } from 'react';
 import '../../components/TicketPage/TicketPage.scss';
-import {
-  PayPalScriptProvider,
-  // PayPalButtons,
-  // PayPalButtonsComponentProps,
-  ReactPayPalScriptOptions,
-} from '@paypal/react-paypal-js';
 
 enum Price {
-  // standart = 5,
-  // vip = 5,
   standart = 649,
   vip = 949,
 }
@@ -30,22 +22,38 @@ export const TicketPagePl: React.FC = () => {
   };
 
   const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
-  /* eslint-disable max-len */
-  const initialOptions: ReactPayPalScriptOptions = {
-    clientId:
-      // 'AULAws5LQhhdzcqSGpJho9Hz6G56XXCCVCkRBz0bGKGqyrv6XBBmurGRerRxmITh6qYjS5iTWPFDtZaW',
-      'AcDg9Updj6ox7ScbndAOAr0RF3FF3dkJBNjN5T9FJfuO4XhBXkC9N0QyvjWUG3AO7fx6y6AAmC1LseQQ',
-    components: 'buttons',
-    currency: 'PLN',
+
+  const handlePayment = async () => {
+    try {
+      const response = await fetch('api/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          name,
+          surname,
+          phone,
+          amount: ticketPrice,
+          ticketType,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Payment response:', data);
+
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        alert('Помилка створення платежу');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Сталася помилка при створенні платежу. Спробуйте ще раз.');
+    }
   };
 
-  // const styles: PayPalButtonsComponentProps['style'] = {
-  //   shape: 'rect',
-  //   layout: 'vertical',
-  // };
 
   return (
-    <PayPalScriptProvider options={initialOptions}>
       <div className="ticket" id="ticket">
         <div className="ticket__wrapper">
           <div className="ticket__main">
@@ -217,13 +225,16 @@ export const TicketPagePl: React.FC = () => {
                     <strong className="option">{ticketPrice} PLN</strong>
                   </p>
 
-                  
+                  {email && name && surname && phone && (
+                <button onClick={handlePayment} className="button">
+                  Oplata przez Przelew24
+                </button>
+              )}
                 </form>
               </div>
             )}
           </div>
         </div>
       </div>
-    </PayPalScriptProvider>
   );
 };
