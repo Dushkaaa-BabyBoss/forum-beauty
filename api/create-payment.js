@@ -2,6 +2,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { sendEmail } from './emailService';
 dotenv.config();
 
 export default async function handler(req, res) {
@@ -90,6 +91,8 @@ export default async function handler(req, res) {
         });
 
         console.log(response.data.data.token);
+
+        await sendEmail(email, name, surname, ticketType, amount, phone);
       } else {
         res.status(500).json({ error: 'Не вдалося створити платіж' });
       }
