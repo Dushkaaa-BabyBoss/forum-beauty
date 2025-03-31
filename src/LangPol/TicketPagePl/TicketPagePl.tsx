@@ -8,6 +8,11 @@ enum Price {
   vip = 949,
 }
 
+enum NewPrice {
+  standart = 799,
+  vip = 1099,
+}
+
 export const TicketPagePl: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [ticketType, setTicketType] = useState<'Standart' | 'VIP'>('Standart');
@@ -16,12 +21,32 @@ export const TicketPagePl: React.FC = () => {
   const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
 
+
+  const isAfterAprolFirst = (() => {
+    const now = new Date();
+    const aprilFirst = new Date(2025, 3, 1, 0, 0, 0);
+    return now >= aprilFirst;
+  })();
+  
+  const getTicketPrice = (type: 'Standart' | 'VIP') => {
+    return type === 'Standart'
+      ? isAfterAprolFirst
+        ? NewPrice.standart
+        : Price.standart
+      : isAfterAprolFirst
+      ? NewPrice.vip
+      : Price.vip;
+  };
+
+  const ticketPrice = getTicketPrice(ticketType);
+
+
   const handleBuyTicket = (type: 'Standart' | 'VIP') => {
     setTicketType(type);
     setShowForm(true);
   };
 
-  const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
+  // const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
 
   const handlePayment = async () => {
     try {
@@ -112,7 +137,7 @@ export const TicketPagePl: React.FC = () => {
                 <p className="ticket__standart--price">
                   Cena:
                   <span className="ticket__standart--price--cost">
-                    {Price.standart} PLN
+                    {getTicketPrice('Standart')} PLN
                   </span>
                 </p>
               </div>
@@ -155,7 +180,7 @@ export const TicketPagePl: React.FC = () => {
                 <p className="ticket__vip--price">
                   Cena:
                   <span className="ticket__vip--price--cost">
-                    {Price.vip} PLN
+                    {getTicketPrice('VIP')} PLN
                   </span>
                 </p>
               </div>

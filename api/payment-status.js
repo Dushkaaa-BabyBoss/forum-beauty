@@ -85,6 +85,8 @@ export default async function handler(req, res) {
       try {
         // Використовуємо отриману інформацію для відправки email
         await sendEmail(email, name, surname, ticketType, amount / 100, phone);
+        // Add success alert transaction
+        alert(`Привіт, ${name} ${surname}! Оплата пройшла успішно, твій квиток відправлений тобі на твій e-mail: ${email}`);
         res.status(200).json({ message: 'Payment successful and email sent' });
       } catch (emailError) {
         console.error('Error sending email:', emailError.message);
@@ -94,6 +96,8 @@ export default async function handler(req, res) {
       }
       res.status(200).json({ message: 'Транзакцію успішно підтверджено' });
     } else {
+      // add not success alert transaction
+      alert(`Упссс... Оплата не пройшла успішно`);
       res.status(500).json({ error: 'Верифікація не пройшла' });
     }
   } catch (error) {
