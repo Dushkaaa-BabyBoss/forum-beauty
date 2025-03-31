@@ -8,6 +8,11 @@ enum Price {
   vip = 949,
 }
 
+enum NewPrice {
+  standart = 799,
+  vip = 1099,
+}
+
 export const TicketPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [ticketType, setTicketType] = useState<'Standart' | 'VIP'>('Standart');
@@ -20,8 +25,26 @@ export const TicketPage: React.FC = () => {
     setTicketType(type);
     setShowForm(true);
   };
+
+  // const isAfterAprolFirst = new Date() >= new Date('2025-04-01');
+
+  const isAfterAprolFirst = (() => {
+    const now = new Date();
+    const aprilFirst = new Date(2025, 3, 1, 0, 0, 0);
+    return now >= aprilFirst;
+  })();
   
-  const ticketPrice = ticketType === 'Standart' ? Price.standart : Price.vip;
+  const getTicketPrice = (type: 'Standart' | 'VIP') => {
+    return type === 'Standart'
+      ? isAfterAprolFirst
+        ? NewPrice.standart
+        : Price.standart
+      : isAfterAprolFirst
+      ? NewPrice.vip
+      : Price.vip;
+  };
+
+  const ticketPrice = getTicketPrice(ticketType);
 
   const handlePayment = async () => {
     try {
@@ -51,6 +74,9 @@ export const TicketPage: React.FC = () => {
       alert('Сталася помилка при створенні платежу. Спробуйте ще раз.');
     }
   };
+
+  console.log('ticketPrice: ', ticketPrice);
+  
 
   return (
     <div className="ticket" id="ticket">
@@ -109,7 +135,7 @@ export const TicketPage: React.FC = () => {
               <p className="ticket__standart--price">
                 Ціна:
                 <span className="ticket__standart--price--cost">
-                  {Price.standart} PLN
+                {getTicketPrice('Standart')} PLN
                 </span>
               </p>
             </div>
@@ -151,7 +177,7 @@ export const TicketPage: React.FC = () => {
               <p className="ticket__vip--price">
                 Ціна:
                 <span className="ticket__vip--price--cost">
-                  {Price.vip} PLN
+                {getTicketPrice('VIP')} PLN
                 </span>
               </p>
             </div>
